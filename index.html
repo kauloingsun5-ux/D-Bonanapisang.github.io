@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kasir D'bonana Pro - Complete</title>
+    <title>Kasir D'bonana Pro - Struk Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,6 +16,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
+        /* Layout Dasar */
         .header { background-color: var(--surface-color); padding: 1rem; display: flex; justify-content: space-between; align-items: center; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .header-actions { display: flex; gap: 0.5rem; }
         .header-btn { background: #3a3a55; color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
@@ -24,45 +25,47 @@
         .main-view { display: none; flex: 1; padding: 1rem; overflow: hidden; gap: 1rem; }
         .main-view.active { display: flex; }
         
+        /* Menu & Keranjang */
         .menu-section { flex: 2; overflow-y: auto; background: var(--surface-color); padding: 1.5rem; border-radius: var(--border-radius); }
-        .category-group { margin-bottom: 25px; }
         .category-title { font-size: 1rem; font-weight: 600; margin-bottom: 12px; color: var(--secondary-color); border-left: 4px solid var(--secondary-color); padding-left: 10px; text-transform: uppercase; }
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
-        .menu-item { background: var(--background-color); border: 1px solid #3d3d5c; padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .menu-item:hover { border-color: var(--primary-color); background: #25253a; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .menu-item { background: var(--background-color); border: 1px solid #3d3d5c; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .menu-item:hover { border-color: var(--primary-color); background: #25253a; transform: translateY(-3px); }
 
         .order-section { flex: 1; background: var(--surface-color); border-radius: var(--border-radius); display: flex; flex-direction: column; overflow: hidden; }
         .order-items { flex: 1; overflow-y: auto; padding: 1rem; }
         .order-item { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 5px; font-size: 0.85rem; }
 
+        /* Report & Chart */
         .report-container { width: 100%; overflow-y: auto; padding: 10px; }
-        .chart-box { background: #1a1a2e; padding: 15px; border-radius: 12px; margin-bottom: 20px; height: 260px; border: 1px solid #333; }
-        .report-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .report-table th, .report-table td { padding: 12px; text-align: left; border-bottom: 1px solid #444; font-size: 0.8rem; }
+        .chart-box { background: #1a1a2e; padding: 15px; border-radius: 12px; margin-bottom: 20px; height: 250px; }
+        .report-table { width: 100%; border-collapse: collapse; }
+        .report-table th, .report-table td { padding: 10px; text-align: left; border-bottom: 1px solid #444; font-size: 0.8rem; }
 
+        /* Modal Umum */
         .modal { display: none; position: fixed; z-index: 1000; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.9); }
         .modal-content { background: var(--surface-color); margin: 5vh auto; padding: 1.5rem; width: 90%; max-width: 400px; border-radius: var(--border-radius); max-height: 90vh; overflow-y: auto; }
         input, select { width: 100%; padding: 10px; background: #1a1a2e; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 10px; }
-        .qris-preview { width: 100%; max-height: 150px; object-fit: contain; margin-top: 10px; display: none; margin-left: auto; margin-right: auto; }
 
-        /* Style Struk */
-        #receipt-area { background: white; color: black; padding: 20px; font-family: 'Courier New', Courier, monospace; width: 300px; margin: 0 auto; display: none; }
-        .receipt-header { text-align: center; border-bottom: 1px dashed black; padding-bottom: 10px; margin-bottom: 10px; }
-        .receipt-line { display: flex; justify-content: space-between; font-size: 0.9rem; }
+        /* Tampilan Struk di Layar */
+        .receipt-card { background: white; color: black; padding: 20px; border-radius: 5px; font-family: 'Courier New', monospace; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .receipt-header { text-align: center; border-bottom: 1px dashed #ccc; padding-bottom: 10px; margin-bottom: 10px; }
+        .receipt-line { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; }
 
+        /* Sembunyikan semua kecuali struk saat print */
         @media print {
             body * { visibility: hidden; }
-            #receipt-area, #receipt-area * { visibility: visible; }
-            #receipt-area { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
+            .receipt-card, .receipt-card * { visibility: visible; }
+            .receipt-card { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
         }
 
-        @media (max-width: 768px) { .main-view { flex-direction: column; overflow-y: auto; } .order-section { height: 350px; flex: none; } }
+        @media (max-width: 768px) { .main-view { flex-direction: column; } .order-section { height: 300px; } }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <h1>D'BONANA <small style="font-size: 0.6rem; color: var(--primary-color);">PRO</small></h1>
+        <h1>D'BONANA <small style="font-size: 0.6rem; color: var(--primary-color);">POS</small></h1>
         <div class="header-actions">
             <button class="header-btn active" id="btn-cashier" onclick="showView('cashier')">Kasir</button>
             <button class="header-btn" id="btn-report" onclick="showView('report')">Laporan</button>
@@ -74,9 +77,9 @@
         <div class="menu-section" id="menu-display"></div>
         <div class="order-section">
             <div class="order-items" id="order-list"></div>
-            <div style="padding: 1.5rem; background: #1a1a2e;">
-                <h3 id="total-price" style="color: var(--secondary-color); margin-bottom: 10px;">Rp 0</h3>
-                <button onclick="openPayment()" class="header-btn" style="width:100%; background:var(--success-color); padding: 12px; font-weight: bold;">PROSES BAYAR</button>
+            <div style="padding: 1rem; background: #1a1a2e;">
+                <h3 id="total-price" style="color: var(--secondary-color);">Rp 0</h3>
+                <button onclick="openPayment()" class="header-btn" style="width:100%; background:var(--success-color); padding: 12px; font-weight: bold; margin-top:10px;">BAYAR SEKARANG</button>
             </div>
         </div>
     </main>
@@ -85,75 +88,70 @@
         <div class="report-container">
             <div class="chart-box"><canvas id="salesChart"></canvas></div>
             <table class="report-table">
-                <thead><tr><th>Hari/Tgl</th><th>Waktu</th><th>Total</th><th>Metode</th></tr></thead>
+                <thead><tr><th>Tanggal/Waktu</th><th>Total</th><th>Metode</th></tr></thead>
                 <tbody id="report-body"></tbody>
             </table>
-            <br><button onclick="clearData()" style="color:var(--danger-color); background:none; border:none; font-size:0.7rem;">Hapus Laporan</button>
         </div>
     </main>
 
-    <div id="modal-settings" class="modal">
-        <div class="modal-content">
-            <h3>Pengaturan Toko & Struk</h3><br>
-            <label style="font-size:0.8rem;">Nama Toko di Struk:</label>
-            <input type="text" id="set-shop-name" placeholder="D'Bonana Jogja">
-            <label style="font-size:0.8rem;">Alamat Jalan:</label>
-            <input type="text" id="set-shop-address" placeholder="Jl. Raya No. 123">
-            <label style="font-size:0.8rem;">Rekening Bank:</label>
-            <input type="text" id="set-bank" placeholder="BCA 123456... a/n Nama">
-            <label style="font-size:0.8rem;">Upload QRIS:</label>
-            <input type="file" accept="image/*" onchange="handleQRISUpload(this)">
-            <img id="qris-settings-preview" class="qris-preview">
-            <button onclick="saveSettings()" class="header-btn" style="width:100%; background:var(--success-color); margin-top:15px; padding:12px;">SIMPAN</button>
-            <button onclick="closeModal('modal-settings')" class="header-btn" style="width:100%; background:none; margin-top:5px;">Tutup</button>
-        </div>
-    </div>
-
     <div id="modal-payment" class="modal">
         <div class="modal-content">
-            <h3>Metode Pembayaran</h3><br>
+            <h3>Pembayaran</h3><br>
             <select id="pay-method" onchange="updatePayInfo()">
-                <option value="Tunai">Tunai</option>
-                <option value="Transfer">Transfer</option>
+                <option value="Tunai">Tunai / Cash</option>
+                <option value="Transfer">Transfer Bank</option>
                 <option value="QRIS">QRIS</option>
             </select>
-            <div id="pay-info" style="margin:10px 0; text-align:center; font-size:0.85rem; background:#1a1a2e; padding:10px; border-radius:8px;"></div>
-            <input type="number" id="pay-amount" placeholder="Uang Tunai Diterima">
-            <button onclick="processTransaction()" class="header-btn" style="width:100%; background:var(--success-color); padding:12px;">SELESAIKAN</button>
-            <button onclick="closeModal('modal-payment')" class="header-btn" style="width:100%; background:none; margin-top:5px;">Batal</button>
+            <div id="pay-info" style="margin:10px 0; text-align:center; font-size:0.85rem;"></div>
+            <input type="number" id="pay-amount" placeholder="Jumlah Bayar">
+            <button onclick="processTransaction()" class="header-btn" style="width:100%; background:var(--success-color); padding:12px;">PROSES</button>
+            <button onclick="closeModal('modal-payment')" class="header-btn" style="width:100%; background:none;">Batal</button>
         </div>
     </div>
 
-    <div id="modal-success" class="modal">
-        <div class="modal-content" style="text-align:center;">
-            <i class="fas fa-check-circle" style="font-size:3rem; color:var(--success-color);"></i>
-            <h3>Transaksi Berhasil!</h3><br>
-            <button onclick="window.print()" class="header-btn" style="width:100%; background:var(--primary-color); margin-bottom:10px;">
-                <i class="fas fa-print"></i> Print Struk
+    <div id="modal-receipt" class="modal">
+        <div class="modal-content" style="max-width: 350px;">
+            <div id="print-area" class="receipt-card">
+                <div class="receipt-header">
+                    <strong id="st-name">D'BONANA</strong><br>
+                    <small id="st-addr">Jl. Contoh No. 123</small>
+                </div>
+                <div id="st-items"></div>
+                <div style="border-top: 1px dashed black; margin-top:10px; padding-top:10px;">
+                    <div class="receipt-line"><span>TOTAL</span><strong id="st-total"></strong></div>
+                    <div class="receipt-line"><span>Metode</span><span id="st-method"></span></div>
+                </div>
+                <div style="text-align:center; margin-top:15px; font-size:0.7rem;">Terima kasih atas kunjungannya!</div>
+            </div>
+            <button onclick="window.print()" class="header-btn" style="width:100%; background:var(--primary-color); margin-bottom:8px;">
+                <i class="fas fa-print"></i> Cetak Struk
             </button>
-            <button onclick="sendWA()" class="header-btn" style="width:100%; background:#25d366; margin-bottom:10px;">
-                <i class="fab fa-whatsapp"></i> Kirim WA
+            <button onclick="sendWA()" class="header-btn" style="width:100%; background:#25d366; margin-bottom:8px;">
+                <i class="fab fa-whatsapp"></i> Kirim WhatsApp
             </button>
-            <button onclick="closeModal('modal-success')" class="header-btn" style="width:100%; background:none;">Selesai</button>
+            <button onclick="closeModal('modal-receipt')" class="header-btn" style="width:100%; background:none; border:1px solid #555;">Tutup</button>
         </div>
     </div>
 
-    <div id="receipt-area">
-        <div class="receipt-header">
-            <strong id="rec-shop-name">D'BONANA</strong><br>
-            <small id="rec-shop-addr">Alamat Belum Diatur</small>
+    <div id="modal-settings" class="modal">
+        <div class="modal-content">
+            <h3>Pengaturan Struk & Toko</h3><br>
+            <label style="font-size:0.8rem;">Nama Toko:</label>
+            <input type="text" id="set-name" placeholder="D'Bonana Pro">
+            <label style="font-size:0.8rem;">Alamat Jalan:</label>
+            <input type="text" id="set-addr" placeholder="Jl. Diponegoro No. 10">
+            <label style="font-size:0.8rem;">Rekening Bank:</label>
+            <input type="text" id="set-bank" placeholder="BCA 123456 a/n Nama">
+            <label style="font-size:0.8rem;">Upload QRIS:</label>
+            <input type="file" accept="image/*" onchange="uploadQRIS(this)">
+            <button onclick="saveSettings()" class="header-btn" style="width:100%; background:var(--success-color); margin-top:10px;">Simpan</button>
+            <button onclick="closeModal('modal-settings')" class="header-btn" style="width:100%; background:none;">Tutup</button>
         </div>
-        <div id="rec-items"></div>
-        <div style="border-top: 1px dashed black; margin-top:10px; padding-top:5px;">
-            <div class="receipt-line"><strong>TOTAL</strong> <strong id="rec-total"></strong></div>
-            <div class="receipt-line">Metode: <span id="rec-method"></span></div>
-        </div>
-        <div style="text-align:center; margin-top:20px; font-size:0.8rem;">Terima Kasih Atas Kunjungan Anda!</div>
     </div>
 
     <script>
         const menu = [
-            // D'bonana Menu
+           // D'bonana Menu
                 { id: 1, category: 'D\'bonana', name: 'Ori', price: 14000, icon: 'fa-star' },
                 { id: 2, category: 'D\'bonana', name: 'Susu', price: 15000, icon: 'fa-glass-water' },
                 { id: 3, category: 'D\'bonana', name: 'Coklat', price: 18000, icon: 'fa-ice-cream' },
@@ -207,7 +205,7 @@
 
         let cart = [];
         let sales = JSON.parse(localStorage.getItem('sales_db')) || [];
-        let config = JSON.parse(localStorage.getItem('config_db')) || { bank: "", qris: "", shopName: "D'BONANA", shopAddress: "Alamat Toko" };
+        let config = JSON.parse(localStorage.getItem('config_db')) || { name: "D'BONANA", addr: "Jl. Kasir No. 1", bank: "", qris: "" };
         let myChart = null;
         let lastTrx = null;
 
@@ -216,16 +214,14 @@
             display.innerHTML = '';
             const categories = [...new Set(menu.map(item => item.category))];
             categories.forEach(cat => {
-                const group = document.createElement('div');
-                group.className = 'category-group';
-                group.innerHTML = `<div class="category-title">${cat}</div><div class="menu-grid"></div>`;
-                const grid = group.querySelector('.menu-grid');
-                menu.filter(item => item.category === cat).forEach(item => {
-                    grid.innerHTML += `<div class="menu-item" onclick="addToCart(${item.id})">
-                        <i class="fas ${item.icon}"></i><br><small>${item.name}</small><br><strong>Rp ${item.price.toLocaleString()}</strong>
+                let html = `<div class="category-title">${cat}</div><div class="menu-grid">`;
+                menu.filter(i => i.category === cat).forEach(item => {
+                    html += `<div class="menu-item" onclick="addToCart(${item.id})">
+                        <i class="fas ${item.icon}" style="color:var(--primary-color)"></i><br>
+                        <small>${item.name}</small><br><strong>Rp ${item.price.toLocaleString()}</strong>
                     </div>`;
                 });
-                display.appendChild(group);
+                display.innerHTML += html + `</div>`;
             });
         }
 
@@ -246,98 +242,83 @@
         function processTransaction() {
             if(cart.length === 0) return;
             const total = cart.reduce((a,b) => a + (b.price * b.qty), 0);
-            const trx = { time: new Date().getTime(), items: [...cart], total: total, method: document.getElementById('pay-method').value };
+            const time = new Date().toLocaleString('id-ID');
+            lastTrx = { time, items: [...cart], total, method: document.getElementById('pay-method').value };
             
-            sales.push(trx);
-            lastTrx = trx;
+            sales.push(lastTrx);
             localStorage.setItem('sales_db', JSON.stringify(sales));
             
-            prepareReceipt(trx);
+            // Siapkan Struk
+            document.getElementById('st-name').innerText = config.name;
+            document.getElementById('st-addr').innerText = config.addr;
+            document.getElementById('st-total').innerText = `Rp ${total.toLocaleString()}`;
+            document.getElementById('st-method').innerText = lastTrx.method;
+            let itemsHtml = '';
+            lastTrx.items.forEach(i => { itemsHtml += `<div class="receipt-line"><span>${i.qty}x ${i.name}</span><span>${(i.qty*i.price).toLocaleString()}</span></div>`; });
+            document.getElementById('st-items').innerHTML = itemsHtml;
+
             cart = []; renderCart(); 
             closeModal('modal-payment');
-            document.getElementById('modal-success').style.display = 'block';
-        }
-
-        function prepareReceipt(trx) {
-            document.getElementById('rec-shop-name').innerText = config.shopName;
-            document.getElementById('rec-shop-addr').innerText = config.shopAddress;
-            document.getElementById('rec-total').innerText = `Rp ${trx.total.toLocaleString()}`;
-            document.getElementById('rec-method').innerText = trx.method;
-            
-            const itemContainer = document.getElementById('rec-items');
-            itemContainer.innerHTML = '';
-            trx.items.forEach(i => {
-                itemContainer.innerHTML += `<div class="receipt-line"><span>${i.qty}x ${i.name}</span><span>${(i.price * i.qty).toLocaleString()}</span></div>`;
-            });
+            document.getElementById('modal-receipt').style.display = 'block';
         }
 
         function sendWA() {
-            let msg = `*${config.shopName}*\n${config.shopAddress}\n------------------\n`;
-            lastTrx.items.forEach(i => { msg += `${i.qty}x ${i.name} = Rp ${(i.price*i.qty).toLocaleString()}\n`; });
-            msg += `------------------\n*TOTAL: Rp ${lastTrx.total.toLocaleString()}*\nMetode: ${lastTrx.method}\n\nTerima Kasih!`;
+            let msg = `*${config.name}*\n${config.addr}\n--------------------\n`;
+            lastTrx.items.forEach(i => { msg += `${i.qty}x ${i.name} = Rp ${(i.qty*i.price).toLocaleString()}\n`; });
+            msg += `--------------------\n*TOTAL: Rp ${lastTrx.total.toLocaleString()}*\nMetode: ${lastTrx.method}\n\nTerima Kasih!`;
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        function showView(view) {
-            document.querySelectorAll('.main-view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.header-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('view-' + view).classList.add('active');
-            document.getElementById('btn-' + view).classList.add('active');
-            if(view === 'report') renderReport();
+        function showView(v) {
+            document.querySelectorAll('.main-view, .header-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-'+v).classList.add('active');
+            document.getElementById('btn-'+v).classList.add('active');
+            if(v === 'report') renderReport();
         }
 
         function renderReport() {
             const body = document.getElementById('report-body');
-            body.innerHTML = ''; let chartLabels = [], chartData = [];
-            const listHari = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+            body.innerHTML = ''; let labels = [], data = [];
             sales.slice(-10).forEach(s => {
-                const d = new Date(s.time);
-                const jam = d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
-                body.innerHTML = `<tr><td>${listHari[d.getDay()]}, ${d.getDate()}</td><td>${jam}</td><td>Rp ${s.total.toLocaleString()}</td><td>${s.method}</td></tr>` + body.innerHTML;
-                chartLabels.push(jam); chartData.push(s.total);
+                body.innerHTML = `<tr><td>${s.time}</td><td>Rp ${s.total.toLocaleString()}</td><td>${s.method}</td></tr>` + body.innerHTML;
+                labels.push(s.time.split(' ')[1]); data.push(s.total);
             });
-            updateChart(chartLabels, chartData);
-        }
-
-        function updateChart(labels, data) {
             const ctx = document.getElementById('salesChart').getContext('2d');
             if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Omzet', data: data, backgroundColor: '#4a90e2' }] }, options: { responsive: true, maintainAspectRatio: false } });
-        }
-
-        function handleQRISUpload(input) {
-            const reader = new FileReader();
-            reader.onload = (e) => { config.qris = e.target.result; document.getElementById('qris-settings-preview').src = e.target.result; document.getElementById('qris-settings-preview').style.display = 'block'; };
-            if(input.files[0]) reader.readAsDataURL(input.files[0]);
-        }
-
-        function saveSettings() {
-            config.shopName = document.getElementById('set-shop-name').value || "D'BONANA";
-            config.shopAddress = document.getElementById('set-shop-address').value || "Alamat Toko";
-            config.bank = document.getElementById('set-bank').value;
-            localStorage.setItem('config_db', JSON.stringify(config));
-            alert('Pengaturan Disimpan!');
-            closeModal('modal-settings');
+            myChart = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Omzet', data, borderColor: '#4a90e2', tension: 0.3 }] } });
         }
 
         function openSettings() {
             document.getElementById('modal-settings').style.display = 'block';
-            document.getElementById('set-shop-name').value = config.shopName;
-            document.getElementById('set-shop-address').value = config.shopAddress;
+            document.getElementById('set-name').value = config.name;
+            document.getElementById('set-addr').value = config.addr;
             document.getElementById('set-bank').value = config.bank;
+        }
+
+        function saveSettings() {
+            config.name = document.getElementById('set-name').value;
+            config.addr = document.getElementById('set-addr').value;
+            config.bank = document.getElementById('set-bank').value;
+            localStorage.setItem('config_db', JSON.stringify(config));
+            closeModal('modal-settings');
+        }
+
+        function uploadQRIS(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => config.qris = e.target.result;
+            reader.readAsDataURL(input.files[0]);
         }
 
         function updatePayInfo() {
             const m = document.getElementById('pay-method').value;
             const info = document.getElementById('pay-info');
-            if(m === 'Transfer') info.innerText = "Transfer: " + (config.bank || "Belum diatur");
-            else if(m === 'QRIS') info.innerHTML = config.qris ? `<img src="${config.qris}" style="width:100px;">` : "QRIS Belum Ada";
-            else info.innerText = "Bayar Tunai";
+            if(m === 'Transfer') info.innerText = "Kirim ke: " + (config.bank || "Belum Diatur");
+            else if(m === 'QRIS') info.innerHTML = config.qris ? `<img src="${config.qris}" width="100">` : "QRIS Belum Ada";
+            else info.innerText = "Terima Tunai";
         }
 
         function openPayment() { if(cart.length > 0) { document.getElementById('modal-payment').style.display = 'block'; updatePayInfo(); } }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function clearData() { if(confirm('Hapus laporan?')) { sales = []; localStorage.removeItem('sales_db'); renderReport(); } }
 
         renderMenu();
     </script>
