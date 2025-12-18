@@ -43,6 +43,18 @@
 
         /* Report & Chart */
         .report-container { width: 100%; height: 100%; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; }
+        
+        /* Stats Cards */
+        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: linear-gradient(135deg, var(--surface-color), #34344d); padding: 20px; border-radius: var(--border-radius); border: 1px solid #3d3d5c; text-align: center; transition: transform 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .stat-icon { font-size: 2rem; margin-bottom: 10px; }
+        .stat-value { font-size: 1.8rem; font-weight: 700; margin-bottom: 5px; }
+        .stat-label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
+        .stat-card:nth-child(1) .stat-icon { color: var(--success-color); }
+        .stat-card:nth-child(2) .stat-icon { color: var(--primary-color); }
+        .stat-card:nth-child(3) .stat-icon { color: var(--secondary-color); }
+        
         .chart-box { background: #1a1a2e; padding: 15px; border-radius: 12px; margin-bottom: 20px; height: 300px; width: 100%; border: 1px solid #333; position: relative; }
         .chart-container { position: relative; height: 100%; width: 100%; }
         .report-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
@@ -63,7 +75,11 @@
             #print-area, #print-area * { visibility: visible; }
             #print-area { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
         }
-        @media (max-width: 768px) { .main-view { flex-direction: column; overflow-y: auto; } .order-section { height: 350px; flex: none; } }
+        @media (max-width: 768px) { 
+            .main-view { flex-direction: column; overflow-y: auto; } 
+            .order-section { height: 350px; flex: none; }
+            .stats-container { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -97,6 +113,25 @@
 
     <main id="view-report" class="main-view">
         <div class="report-container">
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <i class="fas fa-money-bill-wave stat-icon"></i>
+                    <div class="stat-value" id="stat-income">Rp 0</div>
+                    <div class="stat-label">Total Pendapatan</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-chart-line stat-icon"></i>
+                    <div class="stat-value" id="stat-omzet">Rp 0</div>
+                    <div class="stat-label">Omzet Hari Ini</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-box stat-icon"></i>
+                    <div class="stat-value" id="stat-boxes">0</div>
+                    <div class="stat-label">Total Box Terjual</div>
+                </div>
+            </div>
+            
             <div class="chart-box">
                 <div class="chart-container">
                     <canvas id="salesChart"></canvas>
@@ -369,6 +404,33 @@
             });
         }
 
+        function calculateStats() {
+            let totalIncome = 0;
+            let todayIncome = 0;
+            let totalBoxes = 0;
+            const today = new Date().toLocaleDateString('id-ID');
+            
+            sales.forEach(sale => {
+                // Total income from all sales
+                totalIncome += sale.total;
+                
+                // Check if sale is from today
+                if(sale.time.includes(today)) {
+                    todayIncome += sale.total;
+                }
+                
+                // Count total boxes/items sold
+                sale.items.forEach(item => {
+                    totalBoxes += item.qty;
+                });
+            });
+            
+            // Update the stat cards
+            document.getElementById('stat-income').innerText = `Rp ${totalIncome.toLocaleString()}`;
+            document.getElementById('stat-omzet').innerText = `Rp ${todayIncome.toLocaleString()}`;
+            document.getElementById('stat-boxes').innerText = totalBoxes.toLocaleString();
+        }
+
         function renderReport() {
             const body = document.getElementById('report-body');
             body.innerHTML = ''; 
@@ -378,8 +440,15 @@
                     myChart.destroy();
                     myChart = null;
                 }
+                // Reset stats
+                document.getElementById('stat-income').innerText = 'Rp 0';
+                document.getElementById('stat-omzet').innerText = 'Rp 0';
+                document.getElementById('stat-boxes').innerText = '0';
                 return; 
             }
+            
+            // Calculate and update statistics
+            calculateStats();
             
             let labels = [], data = [];
             const lastData = sales.slice(-12); // Ambil 12 data terakhir
@@ -443,7 +512,13 @@
 
         function openPayment() { if(cart.length > 0) { document.getElementById('modal-payment').style.display = 'block'; updatePayInfo(); } }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function clearSalesData() { if(confirm('Hapus semua data laporan?')) { sales = []; localStorage.removeItem('sales_db'); renderReport(); } }
+        function clearSalesData() { 
+            if(confirm('Hapus semua data laporan?')) { 
+                sales = []; 
+                localStorage.removeItem('sales_db'); 
+                renderReport(); 
+            } 
+        }
 
         window.onload = function() {
             renderMenu();
