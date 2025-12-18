@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Kasir D'bonana</title>
+    <!-- Tambahkan Library Chart.js untuk Grafik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* --- General Setup & Fonts --- */
@@ -54,9 +56,31 @@
             color: var(--primary-color);
         }
 
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
         .header .datetime {
             font-size: 0.9rem;
             color: var(--text-secondary);
+        }
+
+        .header-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .header-btn:hover {
+            background-color: #357ABD;
         }
 
         /* --- Main Container --- */
@@ -141,7 +165,6 @@
             color: #fff;
         }
 
-
         /* --- Order Section --- */
         .order-section {
             flex: 1;
@@ -182,28 +205,13 @@
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .order-item-details {
-            flex-grow: 1;
-        }
-
-        .order-item-name {
-            font-weight: 500;
-        }
-
-        .order-item-price {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
+        .order-item-details { flex-grow: 1; }
+        .order-item-name { font-weight: 500; }
+        .order-item-price { font-size: 0.9rem; color: var(--text-secondary); }
 
         .order-item-actions {
             display: flex;
@@ -225,17 +233,8 @@
             align-items: center;
             transition: background-color 0.2s;
         }
-
-        .btn-quantity:hover {
-            background-color: var(--primary-color);
-        }
-
-        .quantity-display {
-            min-width: 30px;
-            text-align: center;
-            font-weight: 600;
-        }
-
+        .btn-quantity:hover { background-color: var(--primary-color); }
+        .quantity-display { min-width: 30px; text-align: center; font-weight: 600; }
         .btn-remove {
             background: none;
             border: none;
@@ -245,24 +244,19 @@
             padding: 0 0.5rem;
             transition: transform 0.2s;
         }
-
-        .btn-remove:hover {
-            transform: scale(1.2);
-        }
+        .btn-remove:hover { transform: scale(1.2); }
 
         .order-summary {
             padding: 1rem 1.5rem;
             background-color: #333;
             border-top: 1px solid #444;
         }
-
         .summary-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 0.75rem;
             font-size: 1rem;
         }
-
         .summary-row.total {
             font-size: 1.25rem;
             font-weight: 700;
@@ -277,7 +271,6 @@
             padding: 1rem 1.5rem;
             background-color: #333;
         }
-
         .btn {
             flex: 1;
             padding: 0.75rem;
@@ -288,28 +281,12 @@
             cursor: pointer;
             transition: all 0.2s ease-in-out;
         }
+        .btn-pay { background-color: var(--success-color); color: white; }
+        .btn-pay:hover { background-color: #229954; transform: scale(1.02); }
+        .btn-cancel { background-color: var(--danger-color); color: white; }
+        .btn-cancel:hover { background-color: #c0392b; transform: scale(1.02); }
 
-        .btn-pay {
-            background-color: var(--success-color);
-            color: white;
-        }
-
-        .btn-pay:hover {
-            background-color: #229954;
-            transform: scale(1.02);
-        }
-
-        .btn-cancel {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
-        .btn-cancel:hover {
-            background-color: #c0392b;
-            transform: scale(1.02);
-        }
-
-        /* --- Receipt Modal --- */
+        /* --- Modal Styles --- */
         .modal {
             display: none;
             position: fixed;
@@ -322,138 +299,172 @@
             background-color: rgba(0, 0, 0, 0.7);
             animation: fadeIn 0.3s;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .modal-content {
-            background-color: #fefefe;
-            color: #333;
-            margin: 5% auto;
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            margin: 3% auto;
             padding: 2rem;
-            border: 1px solid #888;
+            border: 1px solid #444;
             width: 90%;
-            max-width: 450px;
+            max-width: 500px;
             border-radius: var(--border-radius);
             box-shadow: 0 5px 20px rgba(0,0,0,0.5);
             animation: slideDown 0.4s;
         }
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        @keyframes slideDown {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .receipt-header {
-            text-align: center;
-            border-bottom: 2px dashed #ccc;
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .receipt-header h1 {
-            font-size: 1.8rem;
-            color: var(--primary-color);
-        }
-
-        .receipt-header p {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .receipt-body {
-            margin-bottom: 1.5rem;
-        }
-
-        .receipt-item {
+        .modal-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 0.5rem;
+            align-items: center;
+            border-bottom: 1px solid #555;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
-
-        .receipt-summary {
-            border-top: 2px dashed #ccc;
-            padding-top: 1rem;
-            margin-top: 1rem;
-        }
-
-        .receipt-summary .summary-row {
-            font-weight: 600;
-        }
-
-        .receipt-footer {
-            text-align: center;
-            margin-top: 2rem;
-            font-size: 0.9rem;
-            color: #777;
-        }
-
+        .modal-header h2 { color: var(--primary-color); }
         .close-btn {
-            color: #aaa;
-            float: right;
+            color: var(--text-secondary);
             font-size: 28px;
             font-weight: bold;
-            margin-top: -1.5rem;
-        }
-
-        .close-btn:hover,
-        .close-btn:focus {
-            color: black;
-            text-decoration: none;
             cursor: pointer;
         }
+        .close-btn:hover { color: #fff; }
 
-        .modal-actions {
+        /* --- Payment Modal Specific --- */
+        .payment-methods {
             display: flex;
             gap: 1rem;
-            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
         }
-        
-        .modal-actions button {
+        .payment-method {
             flex: 1;
-            padding: 0.75rem;
-            border: none;
+            padding: 1rem;
+            border: 2px solid #555;
             border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+            text-align: center;
             cursor: pointer;
             transition: all 0.2s;
         }
-
-        .btn-print {
-            background-color: var(--primary-color);
-            color: white;
+        .payment-method:hover, .payment-method.active {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 144, 226, 0.1);
         }
-
-        .btn-print:hover {
-            background-color: #357ABD;
+        .payment-method i { font-size: 2rem; margin-bottom: 0.5rem; color: var(--secondary-color); }
+        
+        .payment-details {
+            background-color: var(--background-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
         }
-
-        .btn-close-modal {
-            background-color: #95a5a6;
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background-color: #2a2a3e;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+        .change-display {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--success-color);
+            text-align: center;
+            padding: 1rem;
+            background-color: #1a1a2e;
+            border-radius: 8px;
+        }
+        .qris-placeholder {
+            text-align: center;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            color: #333;
+        }
+        .qris-placeholder img {
+            max-width: 200px;
+            margin-bottom: 1rem;
+        }
+        .btn-final-pay {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--success-color);
             color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-final-pay:hover { background-color: #229954; }
+
+        /* --- Report Modal Specific --- */
+        .report-content {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .report-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .summary-card {
+            background-color: var(--background-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .summary-card h3 { color: var(--text-secondary); font-weight: 400; margin-bottom: 0.5rem; }
+        .summary-card p { font-size: 1.5rem; font-weight: 700; color: var(--secondary-color); }
+        .chart-container { position: relative; height: 300px; }
+        .best-sellers-list {
+            list-style: none;
+        }
+        .best-sellers-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background-color: var(--background-color);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
         }
         
-        .btn-close-modal:hover {
-            background-color: #7f8c8d;
+        /* --- Receipt Modal --- */
+        .receipt-content {
+            background-color: #fefefe;
+            color: #333;
+            padding: 1rem;
         }
+        .receipt-header, .receipt-footer { text-align: center; }
+        .receipt-header h1 { font-size: 1.8rem; color: var(--primary-color); }
+        .receipt-header p { font-size: 0.9rem; color: #666; }
+        .receipt-body { margin: 1.5rem 0; }
+        .receipt-item { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+        .receipt-summary { border-top: 1px dashed #ccc; padding-top: 1rem; margin-top: 1rem; }
+        .receipt-summary .summary-row { font-weight: 600; }
+        .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .modal-actions button { flex: 1; padding: 0.75rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-print { background-color: var(--primary-color); color: white; }
+        .btn-print:hover { background-color: #357ABD; }
+        .btn-close-modal { background-color: #95a5a6; color: white; }
+        .btn-close-modal:hover { background-color: #7f8c8d; }
 
         /* --- Print Styles --- */
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            .modal-content, .modal-content * {
-                visibility: visible;
-            }
+            body * { visibility: hidden; }
+            .modal-content, .modal-content * { visibility: visible; }
             .modal-content {
                 position: absolute;
                 left: 0;
@@ -464,59 +475,42 @@
                 border: none;
                 margin: 0;
                 padding: 1rem;
+                background: white;
+                color: black;
             }
-            .modal-actions, .close-btn {
-                display: none;
-            }
+            .modal-actions, .close-btn { display: none; }
         }
         
         /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-            .menu-section, .order-section {
-                flex: 1;
-                width: 100%;
-            }
-            .menu-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            }
-            .header h1 {
-                font-size: 1.2rem;
-            }
+            .container { flex-direction: column; }
+            .menu-section, .order-section { flex: 1; width: 100%; }
+            .menu-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+            .header h1 { font-size: 1.2rem; }
+            .header-actions { flex-direction: column; gap: 0.5rem; }
+            .payment-methods { flex-direction: column; }
+            .report-summary { grid-template-columns: 1fr; }
         }
-
     </style>
 </head>
 <body>
 
     <header class="header">
         <h1><i class="fas fa-bowl-food"></i> D'bonana</h1>
-        <div class="datetime" id="datetime"></div>
+        <div class="header-actions">
+            <div class="datetime" id="datetime"></div>
+            <button class="header-btn" id="report-btn"><i class="fas fa-chart-bar"></i> Laporan</button>
+        </div>
     </header>
 
     <main class="container">
-        <section class="menu-section" id="menu-section">
-            <!-- Menu items will be generated by JavaScript -->
-        </section>
-
+        <section class="menu-section" id="menu-section"></section>
         <section class="order-section">
-            <div class="order-header">
-                <h2>Pesanan</h2>
-            </div>
-            <div class="order-items" id="order-items">
-                <!-- Order items will be added here -->
-            </div>
+            <div class="order-header"><h2>Pesanan</h2></div>
+            <div class="order-items" id="order-items"></div>
             <div class="order-summary">
-                <div class="summary-row">
-                    <span>Subtotal:</span>
-                    <span id="subtotal">Rp 0</span>
-                </div>
-                <div class="summary-row total">
-                    <span>Total:</span>
-                    <span id="total">Rp 0</span>
-                </div>
+                <div class="summary-row"><span>Subtotal:</span><span id="subtotal">Rp 0</span></div>
+                <div class="summary-row total"><span>Total:</span><span id="total">Rp 0</span></div>
             </div>
             <div class="order-actions">
                 <button class="btn btn-cancel" id="cancel-btn"><i class="fas fa-times-circle"></i> Batal</button>
@@ -525,12 +519,68 @@
         </section>
     </main>
 
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Pilih Metode Pembayaran</h2>
+                <span class="close-btn" id="close-payment-modal">&times;</span>
+            </div>
+            <div class="payment-methods">
+                <div class="payment-method active" data-method="cash">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <p>Tunai (Cash)</p>
+                </div>
+                <div class="payment-method" data-method="qris">
+                    <i class="fas fa-qrcode"></i>
+                    <p>QRIS</p>
+                </div>
+            </div>
+            <div class="payment-details" id="payment-details">
+                <!-- Content will be dynamically inserted here -->
+            </div>
+            <button class="btn-final-pay" id="btn-final-pay">Bayar Sekarang</button>
+        </div>
+    </div>
+
     <!-- Receipt Modal -->
     <div id="receipt-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" id="close-modal-btn">&times;</span>
-            <div id="receipt-content">
-                <!-- Receipt content will be generated by JavaScript -->
+        <div class="modal-content receipt-content">
+            <div id="receipt-content"></div>
+            <div class="modal-actions">
+                <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Cetak</button>
+                <button class="btn-close-modal" id="close-receipt-modal"><i class="fas fa-times"></i> Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div id="report-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Laporan Penjualan</h2>
+                <span class="close-btn" id="close-report-modal">&times;</span>
+            </div>
+            <div class="report-content">
+                <div class="report-summary">
+                    <div class="summary-card">
+                        <h3>Total Pendapatan</h3>
+                        <p id="report-total-revenue">Rp 0</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Total Transaksi</h3>
+                        <p id="report-total-transactions">0</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="sales-chart"></canvas>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Produk Terlaris</h3>
+                    <ul class="best-sellers-list" id="best-sellers-list">
+                        <!-- List will be populated by JS -->
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -538,22 +588,14 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- DATA ---
-            // INFO: Ubah data menu di sini. Tambahkan item baru atau sesuaikan harga dan ikon.
-            const RESTAURANT_INFO = {
-                name: "D'bonana",
-                address: "Jl. Rasa No. 99, Enak City",
-                phone: "021-987654321"
-            };
-
+            const RESTAURANT_INFO = { name: "D'bonana", address: "Jl. Rasa No. 99, Enak City", phone: "021-987654321" };
             const menuData = [
-                // Kategori D'bonana
                 { id: 1, category: 'D\'bonana', name: 'Coklat', price: 18000, icon: 'fa-ice-cream' },
                 { id: 2, category: 'D\'bonana', name: 'Keju', price: 18000, icon: 'fa-cheese' },
                 { id: 3, category: 'D\'bonana', name: 'Palm Sugar', price: 18000, icon: 'fa-cube' },
                 { id: 4, category: 'D\'bonana', name: 'Tiramisu', price: 18000, icon: 'fa-bowl-food' },
                 { id: 5, category: 'D\'bonana', name: 'Matcha', price: 18000, icon: 'fa-leaf' },
                 { id: 6, category: 'D\'bonana', name: 'Oreo', price: 18000, icon: 'fa-cookie' },
-                // Kategori Mix
                 { id: 7, category: 'Mix', name: 'Coklat - Tiramisu', price: 20000, icon: 'fa-blender' },
                 { id: 8, category: 'Mix', name: 'Coklat - Oreo', price: 20000, icon: 'fa-blender' },
                 { id: 9, category: 'Mix', name: 'Coklat - Matcha', price: 20000, icon: 'fa-blender' },
@@ -568,6 +610,9 @@
 
             // --- STATE ---
             let order = [];
+            let salesHistory = JSON.parse(localStorage.getItem('dbonana_sales')) || [];
+            let currentPaymentMethod = 'cash';
+            let salesChart = null; // To hold the chart instance
 
             // --- DOM ELEMENTS ---
             const menuSection = document.getElementById('menu-section');
@@ -576,74 +621,61 @@
             const totalEl = document.getElementById('total');
             const payBtn = document.getElementById('pay-btn');
             const cancelBtn = document.getElementById('cancel-btn');
-            const receiptModal = document.getElementById('receipt-modal');
-            const receiptContent = document.getElementById('receipt-content');
-            const closeModalBtn = document.getElementById('close-modal-btn');
             const datetimeEl = document.getElementById('datetime');
 
-            // --- FUNCTIONS ---
+            // Modals
+            const paymentModal = document.getElementById('payment-modal');
+            const receiptModal = document.getElementById('receipt-modal');
+            const reportModal = document.getElementById('report-modal');
+            
+            // Payment Modal Elements
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            const paymentDetails = document.getElementById('payment-details');
+            const btnFinalPay = document.getElementById('btn-final-pay');
 
-            // 1. Initialize App
+            // Report Modal Elements
+            const reportTotalRevenue = document.getElementById('report-total-revenue');
+            const reportTotalTransactions = document.getElementById('report-total-transactions');
+            const bestSellersList = document.getElementById('best-sellers-list');
+
+            // --- FUNCTIONS ---
             function init() {
                 renderMenu();
+                renderOrder();
                 updateDateTime();
                 setInterval(updateDateTime, 1000);
             }
 
-            // 2. Render Menu
             function renderMenu() {
                 const categorizedMenu = menuData.reduce((acc, item) => {
-                    if (!acc[item.category]) {
-                        acc[item.category] = [];
-                    }
+                    if (!acc[item.category]) acc[item.category] = [];
                     acc[item.category].push(item);
                     return acc;
                 }, {});
-
                 menuSection.innerHTML = '';
                 for (const category in categorizedMenu) {
                     const categoryDiv = document.createElement('div');
                     categoryDiv.className = 'menu-category';
-
-                    const categoryTitle = document.createElement('h2');
-                    categoryTitle.textContent = category;
-                    categoryDiv.appendChild(categoryTitle);
-
-                    const gridDiv = document.createElement('div');
-                    gridDiv.className = 'menu-grid';
-
+                    categoryDiv.innerHTML = `<h2>${category}</h2><div class="menu-grid"></div>`;
+                    const gridDiv = categoryDiv.querySelector('.menu-grid');
                     categorizedMenu[category].forEach(item => {
                         const itemButton = document.createElement('button');
                         itemButton.className = 'menu-item';
-                        itemButton.dataset.id = item.id;
-                        itemButton.dataset.name = item.name;
-                        itemButton.dataset.price = item.price;
-                        itemButton.innerHTML = `
-                            <i class="fas ${item.icon}"></i>
-                            <div class="item-name">${item.name}</div>
-                            <div class="item-price">Rp ${item.price.toLocaleString('id-ID')}</div>
-                        `;
+                        itemButton.innerHTML = `<i class="fas ${item.icon}"></i><div class="item-name">${item.name}</div><div class="item-price">Rp ${item.price.toLocaleString('id-ID')}</div>`;
                         itemButton.addEventListener('click', () => addToOrder(item));
                         gridDiv.appendChild(itemButton);
                     });
-
-                    categoryDiv.appendChild(gridDiv);
                     menuSection.appendChild(categoryDiv);
                 }
             }
 
-            // 3. Add to Order
             function addToOrder(item) {
-                const existingItem = order.find(orderItem => orderItem.id === item.id);
-                if (existingItem) {
-                    existingItem.quantity++;
-                } else {
-                    order.push({ ...item, quantity: 1 });
-                }
+                const existingItem = order.find(o => o.id === item.id);
+                if (existingItem) existingItem.quantity++;
+                else order.push({ ...item, quantity: 1 });
                 renderOrder();
             }
 
-            // 4. Render Order
             function renderOrder() {
                 orderItemsContainer.innerHTML = '';
                 if (order.length === 0) {
@@ -670,76 +702,127 @@
                 updateSummary();
             }
 
-            // 5. Update Quantity
             function updateQuantity(itemId, change) {
-                const item = order.find(orderItem => orderItem.id === itemId);
+                const item = order.find(o => o.id === itemId);
                 if (item) {
                     item.quantity += change;
-                    if (item.quantity <= 0) {
-                        removeFromOrder(itemId);
-                    } else {
-                        renderOrder();
-                    }
+                    if (item.quantity <= 0) removeFromOrder(itemId);
+                    else renderOrder();
                 }
             }
 
-            // 6. Remove from Order
             function removeFromOrder(itemId) {
-                order = order.filter(orderItem => orderItem.id !== itemId);
+                order = order.filter(o => o.id !== itemId);
                 renderOrder();
             }
 
-            // 7. Update Summary
             function updateSummary() {
                 const subtotal = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 const total = subtotal;
-
                 subtotalEl.textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
                 totalEl.textContent = `Rp ${total.toLocaleString('id-ID')}`;
             }
 
-            // 8. Process Payment
-            function processPayment() {
+            function openPaymentModal() {
                 if (order.length === 0) {
                     alert('Pesanan masih kosong!');
                     return;
                 }
-                generateReceipt();
+                currentPaymentMethod = 'cash';
+                document.querySelector('[data-method="cash"]').classList.add('active');
+                document.querySelector('[data-method="qris"]').classList.remove('active');
+                updatePaymentDetails();
+                paymentModal.style.display = 'block';
             }
 
-            // 9. Generate Receipt
-            function generateReceipt() {
-                const subtotal = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                const total = subtotal;
-
-                let receiptItemsHTML = '';
-                order.forEach(item => {
-                    receiptItemsHTML += `
-                        <div class="receipt-item">
-                            <span>${item.name} x${item.quantity}</span>
-                            <span>Rp ${(item.price * item.quantity).toLocaleString('id-ID')}</span>
+            function updatePaymentDetails() {
+                const total = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                if (currentPaymentMethod === 'cash') {
+                    paymentDetails.innerHTML = `
+                        <div class="input-group">
+                            <label for="cash-received">Total Bayar</label>
+                            <input type="text" id="total-payable" value="Rp ${total.toLocaleString('id-ID')}" disabled>
+                        </div>
+                        <div class="input-group">
+                            <label for="cash-received">Uang Diterima</label>
+                            <input type="number" id="cash-received" placeholder="Masukkan jumlah uang">
+                        </div>
+                        <div class="change-display" id="change-display">
+                            Kembalian: Rp 0
                         </div>
                     `;
-                });
+                    const cashReceivedInput = document.getElementById('cash-received');
+                    cashReceivedInput.addEventListener('input', calculateChange);
+                } else { // QRIS
+                    paymentDetails.innerHTML = `
+                        <p style="text-align: center; font-size: 1.1rem;">Silakan scan QR Code untuk membayar</p>
+                        <div class="qris-placeholder">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DN-BONANA-${total}" alt="QRIS">
+                            <p>Total: <strong>Rp ${total.toLocaleString('id-ID')}</strong></p>
+                        </div>
+                    `;
+                }
+            }
 
-                receiptContent.innerHTML = `
+            function calculateChange() {
+                const total = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const cashReceived = parseInt(document.getElementById('cash-received').value) || 0;
+                const change = cashReceived - total;
+                const changeDisplay = document.getElementById('change-display');
+                if (change >= 0) {
+                    changeDisplay.textContent = `Kembalian: Rp ${change.toLocaleString('id-ID')}`;
+                    changeDisplay.style.color = 'var(--success-color)';
+                    btnFinalPay.disabled = false;
+                } else {
+                    changeDisplay.textContent = `Uang kurang: Rp ${Math.abs(change).toLocaleString('id-ID')}`;
+                    changeDisplay.style.color = 'var(--danger-color)';
+                    btnFinalPay.disabled = true;
+                }
+            }
+
+            function processPayment() {
+                const total = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const transaction = {
+                    id: Date.now(),
+                    timestamp: new Date().toISOString(),
+                    items: [...order],
+                    total: total,
+                    paymentMethod: currentPaymentMethod
+                };
+                salesHistory.push(transaction);
+                localStorage.setItem('dbonana_sales', JSON.stringify(salesHistory));
+
+                generateReceipt(transaction);
+                paymentModal.style.display = 'none';
+                order = [];
+                renderOrder();
+            }
+
+            function generateReceipt(transaction) {
+                const receiptItemsHTML = transaction.items.map(item => `
+                    <div class="receipt-item">
+                        <span>${item.name} x${item.quantity}</span>
+                        <span>Rp ${(item.price * item.quantity).toLocaleString('id-ID')}</span>
+                    </div>
+                `).join('');
+
+                document.getElementById('receipt-content').innerHTML = `
                     <div class="receipt-header">
                         <h1>${RESTAURANT_INFO.name}</h1>
                         <p>${RESTAURANT_INFO.address}</p>
                         <p>Telp: ${RESTAURANT_INFO.phone}</p>
                     </div>
                     <div class="receipt-body">
-                        <p style="text-align: center; margin-bottom: 1rem;">================================</p>
+                        <p>No: ${transaction.id}</p>
+                        <p>${new Date(transaction.timestamp).toLocaleString('id-ID')}</p>
+                        <p>Metode: ${transaction.paymentMethod.toUpperCase()}</p>
+                        <p style="text-align: center; margin: 1rem 0;">================================</p>
                         ${receiptItemsHTML}
                         <p style="text-align: center; margin: 1rem 0;">================================</p>
                         <div class="receipt-summary">
-                            <div class="summary-row">
-                                <span>Subtotal:</span>
-                                <span>Rp ${subtotal.toLocaleString('id-ID')}</span>
-                            </div>
                             <div class="summary-row total">
                                 <span>Total Bayar:</span>
-                                <span>Rp ${total.toLocaleString('id-ID')}</span>
+                                <span>Rp ${transaction.total.toLocaleString('id-ID')}</span>
                             </div>
                         </div>
                     </div>
@@ -747,56 +830,124 @@
                         <p>Terima Kasih</p>
                         <p>Silakan Datang Kembali</p>
                     </div>
-                    <div class="modal-actions">
-                        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Cetak</button>
-                        <button class="btn-close-modal" onclick="closeReceiptModal()"><i class="fas fa-times"></i> Tutup</button>
-                    </div>
                 `;
                 receiptModal.style.display = 'block';
             }
 
-            // 10. Close Receipt Modal
-            function closeReceiptModal() {
-                receiptModal.style.display = 'none';
-                order = [];
-                renderOrder();
+            function generateReportData() {
+                const totalRevenue = salesHistory.reduce((sum, sale) => sum + sale.total, 0);
+                const totalTransactions = salesHistory.length;
+
+                reportTotalRevenue.textContent = `Rp ${totalRevenue.toLocaleString('id-ID')}`;
+                reportTotalTransactions.textContent = totalTransactions;
+
+                // Calculate best sellers
+                const itemCounts = {};
+                salesHistory.forEach(sale => {
+                    sale.items.forEach(item => {
+                        if (itemCounts[item.name]) itemCounts[item.name] += item.quantity;
+                        else itemCounts[item.name] = item.quantity;
+                    });
+                });
+
+                const sortedItems = Object.entries(itemCounts)
+                    .sort(([,a], [,b]) => b - a)
+                    .slice(0, 5);
+
+                bestSellersList.innerHTML = sortedItems.map(([name, count]) => `
+                    <li>
+                        <span>${name}</span>
+                        <span>${count}x</span>
+                    </li>
+                `).join('');
+
+                // Prepare data for chart
+                const chartLabels = sortedItems.map(item => item[0]);
+                const chartData = sortedItems.map(item => item[1]);
+
+                // Destroy previous chart instance if it exists
+                if (salesChart) {
+                    salesChart.destroy();
+                }
+
+                // Create new chart
+                const ctx = document.getElementById('sales-chart').getContext('2d');
+                salesChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Jumlah Terjual',
+                            data: chartData,
+                            backgroundColor: 'rgba(245, 166, 35, 0.6)',
+                            borderColor: 'rgba(245, 166, 35, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#e0e0e0' },
+                                grid: { color: '#444' }
+                            },
+                            x: {
+                                ticks: { color: '#e0e0e0' },
+                                grid: { color: '#444' }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: { color: '#e0e0e0' }
+                            }
+                        }
+                    }
+                });
             }
             
-            // 11. Update Date and Time
             function updateDateTime() {
                 const now = new Date();
-                const options = { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                };
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
                 datetimeEl.textContent = now.toLocaleDateString('id-ID', options);
             }
 
             // --- EVENT LISTENERS ---
-            payBtn.addEventListener('click', processPayment);
-            cancelBtn.addEventListener('click', () => {
-                if (confirm('Apakah Anda yakin ingin membatalkan semua pesanan?')) {
-                    order = [];
-                    renderOrder();
-                }
+            payBtn.addEventListener('click', openPaymentModal);
+            cancelBtn.addEventListener('click', () => { if (confirm('Batalkan pesanan?')) { order = []; renderOrder(); } });
+            
+            // Payment Modal Events
+            document.getElementById('close-payment-modal').addEventListener('click', () => paymentModal.style.display = 'none');
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', () => {
+                    paymentMethods.forEach(m => m.classList.remove('active'));
+                    method.classList.add('active');
+                    currentPaymentMethod = method.dataset.method;
+                    updatePaymentDetails();
+                });
             });
-            closeModalBtn.addEventListener('click', closeReceiptModal);
+            btnFinalPay.addEventListener('click', processPayment);
+
+            // Receipt Modal Events
+            document.getElementById('close-receipt-modal').addEventListener('click', () => receiptModal.style.display = 'none');
+            
+            // Report Modal Events
+            document.getElementById('report-btn').addEventListener('click', () => {
+                generateReportData();
+                reportModal.style.display = 'block';
+            });
+            document.getElementById('close-report-modal').addEventListener('click', () => reportModal.style.display = 'none');
 
             window.addEventListener('click', (event) => {
-                if (event.target === receiptModal) {
-                    closeReceiptModal();
-                }
+                if (event.target === paymentModal) paymentModal.style.display = 'none';
+                if (event.target === receiptModal) receiptModal.style.display = 'none';
+                if (event.target === reportModal) reportModal.style.display = 'none';
             });
 
             // --- INITIALIZE ---
             init();
         });
     </script>
-
 </body>
 </html>
