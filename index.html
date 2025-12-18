@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kasir D'bonana Pro - Terintegrasi</title>
+    <title>Kasir D'bonana Pro - Complete</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,7 +16,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* Header */
         .header { background-color: var(--surface-color); padding: 1rem; display: flex; justify-content: space-between; align-items: center; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .header-actions { display: flex; gap: 0.5rem; }
         .header-btn { background: #3a3a55; color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
@@ -25,32 +24,37 @@
         .main-view { display: none; flex: 1; padding: 1rem; overflow: hidden; gap: 1rem; }
         .main-view.active { display: flex; }
         
-        /* Menu Layout */
         .menu-section { flex: 2; overflow-y: auto; background: var(--surface-color); padding: 1.5rem; border-radius: var(--border-radius); }
         .category-group { margin-bottom: 25px; }
         .category-title { font-size: 1rem; font-weight: 600; margin-bottom: 12px; color: var(--secondary-color); border-left: 4px solid var(--secondary-color); padding-left: 10px; text-transform: uppercase; }
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
         .menu-item { background: var(--background-color); border: 1px solid #3d3d5c; padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .menu-item:hover { border-color: var(--primary-color); background: #25253a; transform: translateY(-3px); }
+        .menu-item:hover { border-color: var(--primary-color); background: #25253a; }
 
-        /* Keranjang */
-        .order-section { flex: 1; background: var(--surface-color); border-radius: var(--border-radius); display: flex; flex-direction: column; overflow: hidden; box-shadow: -5px 0 15px rgba(0,0,0,0.2); }
-        .order-header { padding: 1rem; background: #34344d; text-align: center; font-weight: 600; }
+        .order-section { flex: 1; background: var(--surface-color); border-radius: var(--border-radius); display: flex; flex-direction: column; overflow: hidden; }
         .order-items { flex: 1; overflow-y: auto; padding: 1rem; }
         .order-item { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 5px; font-size: 0.85rem; }
 
-        /* Report & Chart */
         .report-container { width: 100%; overflow-y: auto; padding: 10px; }
         .chart-box { background: #1a1a2e; padding: 15px; border-radius: 12px; margin-bottom: 20px; height: 260px; border: 1px solid #333; }
         .report-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .report-table th, .report-table td { padding: 12px; text-align: left; border-bottom: 1px solid #444; font-size: 0.8rem; }
-        .report-table th { background: #34344d; color: var(--secondary-color); position: sticky; top: 0; }
 
-        /* Modals */
         .modal { display: none; position: fixed; z-index: 1000; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.9); }
         .modal-content { background: var(--surface-color); margin: 5vh auto; padding: 1.5rem; width: 90%; max-width: 400px; border-radius: var(--border-radius); max-height: 90vh; overflow-y: auto; }
         input, select { width: 100%; padding: 10px; background: #1a1a2e; border: 1px solid #444; color: white; border-radius: 8px; margin-bottom: 10px; }
-        .qris-preview { width: 100%; max-height: 200px; object-fit: contain; margin-top: 10px; border: 1px dashed #444; display: none; margin-left: auto; margin-right: auto; }
+        .qris-preview { width: 100%; max-height: 150px; object-fit: contain; margin-top: 10px; display: none; margin-left: auto; margin-right: auto; }
+
+        /* Style Struk */
+        #receipt-area { background: white; color: black; padding: 20px; font-family: 'Courier New', Courier, monospace; width: 300px; margin: 0 auto; display: none; }
+        .receipt-header { text-align: center; border-bottom: 1px dashed black; padding-bottom: 10px; margin-bottom: 10px; }
+        .receipt-line { display: flex; justify-content: space-between; font-size: 0.9rem; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #receipt-area, #receipt-area * { visibility: visible; }
+            #receipt-area { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
+        }
 
         @media (max-width: 768px) { .main-view { flex-direction: column; overflow-y: auto; } .order-section { height: 350px; flex: none; } }
     </style>
@@ -60,8 +64,8 @@
     <header class="header">
         <h1>D'BONANA <small style="font-size: 0.6rem; color: var(--primary-color);">PRO</small></h1>
         <div class="header-actions">
-            <button class="header-btn active" id="btn-cashier" onclick="showView('cashier')"><i class="fas fa-cash-register"></i> Kasir</button>
-            <button class="header-btn" id="btn-report" onclick="showView('report')"><i class="fas fa-chart-line"></i> Laporan</button>
+            <button class="header-btn active" id="btn-cashier" onclick="showView('cashier')">Kasir</button>
+            <button class="header-btn" id="btn-report" onclick="showView('report')">Laporan</button>
             <button class="header-btn" onclick="openSettings()"><i class="fas fa-cog"></i></button>
         </div>
     </header>
@@ -69,48 +73,37 @@
     <main id="view-cashier" class="main-view active">
         <div class="menu-section" id="menu-display"></div>
         <div class="order-section">
-            <div class="order-header">PESANAN</div>
             <div class="order-items" id="order-list"></div>
             <div style="padding: 1.5rem; background: #1a1a2e;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <span>TOTAL</span>
-                    <h3 id="total-price" style="color: var(--secondary-color);">Rp 0</h3>
-                </div>
-                <button onclick="openPayment()" class="header-btn" style="width:100%; background:var(--success-color); padding: 12px; font-weight: bold; font-size: 1rem;">BAYAR</button>
+                <h3 id="total-price" style="color: var(--secondary-color); margin-bottom: 10px;">Rp 0</h3>
+                <button onclick="openPayment()" class="header-btn" style="width:100%; background:var(--success-color); padding: 12px; font-weight: bold;">PROSES BAYAR</button>
             </div>
         </div>
     </main>
 
     <main id="view-report" class="main-view">
         <div class="report-container">
-            <h2 style="margin-bottom:15px;">Grafik & Laporan</h2>
             <div class="chart-box"><canvas id="salesChart"></canvas></div>
             <table class="report-table">
-                <thead>
-                    <tr>
-                        <th>Hari, Tanggal & Tahun</th>
-                        <th>Waktu</th>
-                        <th>Total</th>
-                        <th>Metode</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Hari/Tgl</th><th>Waktu</th><th>Total</th><th>Metode</th></tr></thead>
                 <tbody id="report-body"></tbody>
             </table>
-            <br>
-            <button onclick="clearData()" style="color:var(--danger-color); background:none; border:none; cursor:pointer; font-size:0.75rem;">Hapus Semua Data Laporan</button>
+            <br><button onclick="clearData()" style="color:var(--danger-color); background:none; border:none; font-size:0.7rem;">Hapus Laporan</button>
         </div>
     </main>
 
     <div id="modal-settings" class="modal">
         <div class="modal-content">
-            <h3>Pengaturan Toko</h3><br>
-            <label style="font-size:0.8rem;">Rekening Bank (Nama & No):</label>
-            <input type="text" id="set-bank" placeholder="Contoh: BCA 123456789 a/n Budi">
-            
-            <label style="font-size:0.8rem;">Upload Gambar QRIS:</label>
-            <input type="file" id="qris-upload" accept="image/*" onchange="handleQRISUpload(this)">
+            <h3>Pengaturan Toko & Struk</h3><br>
+            <label style="font-size:0.8rem;">Nama Toko di Struk:</label>
+            <input type="text" id="set-shop-name" placeholder="D'Bonana Jogja">
+            <label style="font-size:0.8rem;">Alamat Jalan:</label>
+            <input type="text" id="set-shop-address" placeholder="Jl. Raya No. 123">
+            <label style="font-size:0.8rem;">Rekening Bank:</label>
+            <input type="text" id="set-bank" placeholder="BCA 123456... a/n Nama">
+            <label style="font-size:0.8rem;">Upload QRIS:</label>
+            <input type="file" accept="image/*" onchange="handleQRISUpload(this)">
             <img id="qris-settings-preview" class="qris-preview">
-            
             <button onclick="saveSettings()" class="header-btn" style="width:100%; background:var(--success-color); margin-top:15px; padding:12px;">SIMPAN</button>
             <button onclick="closeModal('modal-settings')" class="header-btn" style="width:100%; background:none; margin-top:5px;">Tutup</button>
         </div>
@@ -118,17 +111,44 @@
 
     <div id="modal-payment" class="modal">
         <div class="modal-content">
-            <h3>Pembayaran</h3><br>
+            <h3>Metode Pembayaran</h3><br>
             <select id="pay-method" onchange="updatePayInfo()">
-                <option value="Tunai">Tunai / Cash</option>
-                <option value="Transfer">Transfer Bank</option>
+                <option value="Tunai">Tunai</option>
+                <option value="Transfer">Transfer</option>
                 <option value="QRIS">QRIS</option>
             </select>
-            <div id="pay-info" style="margin:15px 0; text-align:center; font-size:0.85rem; background:#1a1a2e; padding:10px; border-radius:8px;"></div>
-            <input type="number" id="pay-amount" placeholder="Jumlah Uang Diterima">
-            <button onclick="processTransaction()" class="header-btn" style="width:100%; background:var(--success-color); margin-top:10px; padding:12px;">SELESAIKAN</button>
+            <div id="pay-info" style="margin:10px 0; text-align:center; font-size:0.85rem; background:#1a1a2e; padding:10px; border-radius:8px;"></div>
+            <input type="number" id="pay-amount" placeholder="Uang Tunai Diterima">
+            <button onclick="processTransaction()" class="header-btn" style="width:100%; background:var(--success-color); padding:12px;">SELESAIKAN</button>
             <button onclick="closeModal('modal-payment')" class="header-btn" style="width:100%; background:none; margin-top:5px;">Batal</button>
         </div>
+    </div>
+
+    <div id="modal-success" class="modal">
+        <div class="modal-content" style="text-align:center;">
+            <i class="fas fa-check-circle" style="font-size:3rem; color:var(--success-color);"></i>
+            <h3>Transaksi Berhasil!</h3><br>
+            <button onclick="window.print()" class="header-btn" style="width:100%; background:var(--primary-color); margin-bottom:10px;">
+                <i class="fas fa-print"></i> Print Struk
+            </button>
+            <button onclick="sendWA()" class="header-btn" style="width:100%; background:#25d366; margin-bottom:10px;">
+                <i class="fab fa-whatsapp"></i> Kirim WA
+            </button>
+            <button onclick="closeModal('modal-success')" class="header-btn" style="width:100%; background:none;">Selesai</button>
+        </div>
+    </div>
+
+    <div id="receipt-area">
+        <div class="receipt-header">
+            <strong id="rec-shop-name">D'BONANA</strong><br>
+            <small id="rec-shop-addr">Alamat Belum Diatur</small>
+        </div>
+        <div id="rec-items"></div>
+        <div style="border-top: 1px dashed black; margin-top:10px; padding-top:5px;">
+            <div class="receipt-line"><strong>TOTAL</strong> <strong id="rec-total"></strong></div>
+            <div class="receipt-line">Metode: <span id="rec-method"></span></div>
+        </div>
+        <div style="text-align:center; margin-top:20px; font-size:0.8rem;">Terima Kasih Atas Kunjungan Anda!</div>
     </div>
 
     <script>
@@ -187,8 +207,9 @@
 
         let cart = [];
         let sales = JSON.parse(localStorage.getItem('sales_db')) || [];
-        let config = JSON.parse(localStorage.getItem('config_db')) || { bank: "", qris: "" };
+        let config = JSON.parse(localStorage.getItem('config_db')) || { bank: "", qris: "", shopName: "D'BONANA", shopAddress: "Alamat Toko" };
         let myChart = null;
+        let lastTrx = null;
 
         function renderMenu() {
             const display = document.getElementById('menu-display');
@@ -200,12 +221,9 @@
                 group.innerHTML = `<div class="category-title">${cat}</div><div class="menu-grid"></div>`;
                 const grid = group.querySelector('.menu-grid');
                 menu.filter(item => item.category === cat).forEach(item => {
-                    grid.innerHTML += `
-                        <div class="menu-item" onclick="addToCart(${item.id})">
-                            <i class="fas ${item.icon}" style="color:var(--primary-color); margin-bottom:5px;"></i>
-                            <div style="font-size:0.8rem; font-weight:500;">${item.name}</div>
-                            <div style="color:var(--secondary-color); font-weight:bold; font-size:0.75rem;">Rp ${item.price.toLocaleString()}</div>
-                        </div>`;
+                    grid.innerHTML += `<div class="menu-item" onclick="addToCart(${item.id})">
+                        <i class="fas ${item.icon}"></i><br><small>${item.name}</small><br><strong>Rp ${item.price.toLocaleString()}</strong>
+                    </div>`;
                 });
                 display.appendChild(group);
             });
@@ -225,6 +243,41 @@
             document.getElementById('total-price').innerText = `Rp ${total.toLocaleString()}`;
         }
 
+        function processTransaction() {
+            if(cart.length === 0) return;
+            const total = cart.reduce((a,b) => a + (b.price * b.qty), 0);
+            const trx = { time: new Date().getTime(), items: [...cart], total: total, method: document.getElementById('pay-method').value };
+            
+            sales.push(trx);
+            lastTrx = trx;
+            localStorage.setItem('sales_db', JSON.stringify(sales));
+            
+            prepareReceipt(trx);
+            cart = []; renderCart(); 
+            closeModal('modal-payment');
+            document.getElementById('modal-success').style.display = 'block';
+        }
+
+        function prepareReceipt(trx) {
+            document.getElementById('rec-shop-name').innerText = config.shopName;
+            document.getElementById('rec-shop-addr').innerText = config.shopAddress;
+            document.getElementById('rec-total').innerText = `Rp ${trx.total.toLocaleString()}`;
+            document.getElementById('rec-method').innerText = trx.method;
+            
+            const itemContainer = document.getElementById('rec-items');
+            itemContainer.innerHTML = '';
+            trx.items.forEach(i => {
+                itemContainer.innerHTML += `<div class="receipt-line"><span>${i.qty}x ${i.name}</span><span>${(i.price * i.qty).toLocaleString()}</span></div>`;
+            });
+        }
+
+        function sendWA() {
+            let msg = `*${config.shopName}*\n${config.shopAddress}\n------------------\n`;
+            lastTrx.items.forEach(i => { msg += `${i.qty}x ${i.name} = Rp ${(i.price*i.qty).toLocaleString()}\n`; });
+            msg += `------------------\n*TOTAL: Rp ${lastTrx.total.toLocaleString()}*\nMetode: ${lastTrx.method}\n\nTerima Kasih!`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
         function showView(view) {
             document.querySelectorAll('.main-view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.header-btn').forEach(b => b.classList.remove('active'));
@@ -235,16 +288,12 @@
 
         function renderReport() {
             const body = document.getElementById('report-body');
-            body.innerHTML = '';
-            let chartLabels = [], chartData = [];
-            const listHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-
-            sales.slice(-15).forEach(s => {
+            body.innerHTML = ''; let chartLabels = [], chartData = [];
+            const listHari = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+            sales.slice(-10).forEach(s => {
                 const d = new Date(s.time);
-                const hari = listHari[d.getDay()];
-                const tgl = d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' });
                 const jam = d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
-                body.innerHTML = `<tr><td>${hari}, ${tgl}</td><td>${jam} WIB</td><td style="font-weight:bold; color:var(--success-color)">Rp ${s.total.toLocaleString()}</td><td>${s.method}</td></tr>` + body.innerHTML;
+                body.innerHTML = `<tr><td>${listHari[d.getDay()]}, ${d.getDate()}</td><td>${jam}</td><td>Rp ${s.total.toLocaleString()}</td><td>${s.method}</td></tr>` + body.innerHTML;
                 chartLabels.push(jam); chartData.push(s.total);
             });
             updateChart(chartLabels, chartData);
@@ -253,60 +302,42 @@
         function updateChart(labels, data) {
             const ctx = document.getElementById('salesChart').getContext('2d');
             if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: labels, datasets: [{ label: 'Total Penjualan', data: data, backgroundColor: '#4a90e2', borderRadius: 5 }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: '#333' } }, x: { grid: { display: false } } } }
-            });
-        }
-
-        function processTransaction() {
-            if(cart.length === 0) return;
-            const total = cart.reduce((a,b) => a + (b.price * b.qty), 0);
-            sales.push({ time: new Date().getTime(), total: total, method: document.getElementById('pay-method').value });
-            localStorage.setItem('sales_db', JSON.stringify(sales));
-            cart = []; renderCart(); closeModal('modal-payment');
-            alert('Transaksi Berhasil!');
+            myChart = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Omzet', data: data, backgroundColor: '#4a90e2' }] }, options: { responsive: true, maintainAspectRatio: false } });
         }
 
         function handleQRISUpload(input) {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const preview = document.getElementById('qris-settings-preview');
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-                config.qris = e.target.result;
-            };
+            reader.onload = (e) => { config.qris = e.target.result; document.getElementById('qris-settings-preview').src = e.target.result; document.getElementById('qris-settings-preview').style.display = 'block'; };
             if(input.files[0]) reader.readAsDataURL(input.files[0]);
         }
 
         function saveSettings() {
+            config.shopName = document.getElementById('set-shop-name').value || "D'BONANA";
+            config.shopAddress = document.getElementById('set-shop-address').value || "Alamat Toko";
             config.bank = document.getElementById('set-bank').value;
             localStorage.setItem('config_db', JSON.stringify(config));
-            alert('Pengaturan disimpan!');
+            alert('Pengaturan Disimpan!');
             closeModal('modal-settings');
         }
 
         function openSettings() {
             document.getElementById('modal-settings').style.display = 'block';
+            document.getElementById('set-shop-name').value = config.shopName;
+            document.getElementById('set-shop-address').value = config.shopAddress;
             document.getElementById('set-bank').value = config.bank;
-            if(config.qris) {
-                const img = document.getElementById('qris-settings-preview');
-                img.src = config.qris; img.style.display = 'block';
-            }
         }
 
         function updatePayInfo() {
             const m = document.getElementById('pay-method').value;
             const info = document.getElementById('pay-info');
-            if(m === 'Transfer') info.innerText = "Silakan transfer ke: " + (config.bank || "(Rekening belum diatur)");
-            else if(m === 'QRIS') info.innerHTML = config.qris ? `<img src="${config.qris}" style="width:100%; max-width:180px; border-radius:8px;"><br>Scan untuk membayar` : "QRIS belum diunggah.";
-            else info.innerText = "Terima pembayaran tunai";
+            if(m === 'Transfer') info.innerText = "Transfer: " + (config.bank || "Belum diatur");
+            else if(m === 'QRIS') info.innerHTML = config.qris ? `<img src="${config.qris}" style="width:100px;">` : "QRIS Belum Ada";
+            else info.innerText = "Bayar Tunai";
         }
 
         function openPayment() { if(cart.length > 0) { document.getElementById('modal-payment').style.display = 'block'; updatePayInfo(); } }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function clearData() { if(confirm('Hapus semua data?')) { sales = []; localStorage.removeItem('sales_db'); renderReport(); } }
+        function clearData() { if(confirm('Hapus laporan?')) { sales = []; localStorage.removeItem('sales_db'); renderReport(); } }
 
         renderMenu();
     </script>
