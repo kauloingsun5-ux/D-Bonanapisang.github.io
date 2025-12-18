@@ -385,12 +385,18 @@
             background-color: #1a1a2e;
             border-radius: 8px;
         }
-        .qris-placeholder {
+        .qris-placeholder, .transfer-placeholder {
             text-align: center;
             padding: 2rem;
-            background-color: #fff;
             border-radius: 8px;
+        }
+        .qris-placeholder {
+            background-color: #fff;
             color: #333;
+        }
+        .transfer-placeholder {
+            background-color: #2a2a3e;
+            border: 1px dashed #555;
         }
         .qris-placeholder img {
             max-width: 200px;
@@ -409,6 +415,21 @@
             transition: background-color 0.2s;
         }
         .btn-final-pay:hover { background-color: #229954; }
+        
+        /* --- Settings Modal Specific --- */
+        .btn-save {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-save:hover { background-color: #357ABD; }
 
         /* --- Report Modal Specific --- */
         .report-content {
@@ -460,6 +481,22 @@
         .btn-print:hover { background-color: #357ABD; }
         .btn-close-modal { background-color: #95a5a6; color: white; }
         .btn-close-modal:hover { background-color: #7f8c8d; }
+        
+        /* --- Delete Report Button --- */
+        .btn-delete-report {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .btn-delete-report:hover {
+            background-color: #c0392b;
+        }
 
         /* --- Print Styles --- */
         @media print {
@@ -478,7 +515,7 @@
                 background: white;
                 color: black;
             }
-            .modal-actions, .close-btn { display: none; }
+            .modal-actions, .close-btn, .btn-delete-report { display: none; }
         }
         
         /* --- Responsive Design --- */
@@ -499,6 +536,7 @@
         <h1><i class="fas fa-bowl-food"></i> D'bonana</h1>
         <div class="header-actions">
             <div class="datetime" id="datetime"></div>
+            <button class="header-btn" id="settings-btn"><i class="fas fa-cog"></i> Pengaturan</button>
             <button class="header-btn" id="report-btn"><i class="fas fa-chart-bar"></i> Laporan</button>
         </div>
     </header>
@@ -519,6 +557,31 @@
         </section>
     </main>
 
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Pengaturan Rekening Transfer</h2>
+                <span class="close-btn" id="close-settings-modal">&times;</span>
+            </div>
+            <div class="payment-details">
+                <div class="input-group">
+                    <label for="bank-name">Nama Bank</label>
+                    <input type="text" id="bank-name" placeholder="Contoh: BCA">
+                </div>
+                <div class="input-group">
+                    <label for="account-number">Nomor Rekening</label>
+                    <input type="text" id="account-number" placeholder="Contoh: 123-456-7890">
+                </div>
+                <div class="input-group">
+                    <label for="account-holder">Atas Nama</label>
+                    <input type="text" id="account-holder" placeholder="Contoh: D'bonana Indonesia">
+                </div>
+            </div>
+            <button class="btn-save" id="save-settings-btn">Simpan Perubahan</button>
+        </div>
+    </div>
+
     <!-- Payment Modal -->
     <div id="payment-modal" class="modal">
         <div class="modal-content">
@@ -530,6 +593,10 @@
                 <div class="payment-method active" data-method="cash">
                     <i class="fas fa-money-bill-wave"></i>
                     <p>Tunai (Cash)</p>
+                </div>
+                <div class="payment-method" data-method="transfer">
+                    <i class="fas fa-exchange-alt"></i>
+                    <p>Transfer</p>
                 </div>
                 <div class="payment-method" data-method="qris">
                     <i class="fas fa-qrcode"></i>
@@ -559,7 +626,10 @@
         <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
                 <h2>Laporan Penjualan</h2>
-                <span class="close-btn" id="close-report-modal">&times;</span>
+                <div>
+                    <button class="btn-delete-report" id="delete-report-btn"><i class="fas fa-trash-alt"></i> Hapus Semua Data</button>
+                    <span class="close-btn" id="close-report-modal">&times;</span>
+                </div>
             </div>
             <div class="report-content">
                 <div class="report-summary">
@@ -590,18 +660,20 @@
             // --- DATA ---
             const RESTAURANT_INFO = { name: "D'bonana", address: "Jl. Rasa No. 99, Enak City", phone: "021-987654321" };
             const menuData = [
+                // Kategori D'bonana dengan harga 18.000
                 { id: 1, category: 'D\'bonana', name: 'Coklat', price: 18000, icon: 'fa-ice-cream' },
                 { id: 2, category: 'D\'bonana', name: 'Keju', price: 18000, icon: 'fa-cheese' },
                 { id: 3, category: 'D\'bonana', name: 'Palm Sugar', price: 18000, icon: 'fa-cube' },
                 { id: 4, category: 'D\'bonana', name: 'Tiramisu', price: 18000, icon: 'fa-bowl-food' },
                 { id: 5, category: 'D\'bonana', name: 'Matcha', price: 18000, icon: 'fa-leaf' },
                 { id: 6, category: 'D\'bonana', name: 'Oreo', price: 18000, icon: 'fa-cookie' },
-                { id: 7, category: 'Mix', name: 'Coklat - Tiramisu', price: 20000, icon: 'fa-blender' },
-                { id: 8, category: 'Mix', name: 'Coklat - Oreo', price: 20000, icon: 'fa-blender' },
-                { id: 9, category: 'Mix', name: 'Coklat - Matcha', price: 20000, icon: 'fa-blender' },
-                { id: 10, category: 'Mix', name: 'Tiramisu - Matcha', price: 20000, icon: 'fa-blender' },
-                { id: 11, category: 'Mix', name: 'Tiramisu - Oreo', price: 20000, icon: 'fa-blender' },
-                { id: 12, category: 'Mix', name: 'Matcha - Oreo', price: 20000, icon: 'fa-blender' },
+                // Kategori Mix dengan harga 23.000
+                { id: 7, category: 'Mix', name: 'Coklat - Tiramisu', price: 23000, icon: 'fa-blender' },
+                { id: 8, category: 'Mix', name: 'Coklat - Oreo', price: 23000, icon: 'fa-blender' },
+                { id: 9, category: 'Mix', name: 'Coklat - Matcha', price: 23000, icon: 'fa-blender' },
+                { id: 10, category: 'Mix', name: 'Tiramisu - Matcha', price: 23000, icon: 'fa-blender' },
+                { id: 11, category: 'Mix', name: 'Tiramisu - Oreo', price: 23000, icon: 'fa-blender' },
+                { id: 12, category: 'Mix', name: 'Matcha - Oreo', price: 23000, icon: 'fa-blender' },
                 { id: 13, category: 'Mix', name: 'Keju - Coklat', price: 23000, icon: 'fa-blender' },
                 { id: 14, category: 'Mix', name: 'Keju - Tiramisu', price: 23000, icon: 'fa-blender' },
                 { id: 15, category: 'Mix', name: 'Keju - Matcha', price: 23000, icon: 'fa-blender' },
@@ -614,6 +686,13 @@
             let currentPaymentMethod = 'cash';
             let salesChart = null; // To hold the chart instance
 
+            // Load settings from localStorage or use defaults
+            let settingsData = JSON.parse(localStorage.getItem('dbonana_settings')) || {
+                bankName: 'BCA',
+                accountNumber: '123-456-7890',
+                accountHolder: 'D\'bonana Indonesia'
+            };
+
             // --- DOM ELEMENTS ---
             const menuSection = document.getElementById('menu-section');
             const orderItemsContainer = document.getElementById('order-items');
@@ -624,10 +703,18 @@
             const datetimeEl = document.getElementById('datetime');
 
             // Modals
+            const settingsModal = document.getElementById('settings-modal');
             const paymentModal = document.getElementById('payment-modal');
             const receiptModal = document.getElementById('receipt-modal');
             const reportModal = document.getElementById('report-modal');
             
+            // Settings Modal Elements
+            const settingsBtn = document.getElementById('settings-btn');
+            const bankNameInput = document.getElementById('bank-name');
+            const accountNumberInput = document.getElementById('account-number');
+            const accountHolderInput = document.getElementById('account-holder');
+            const saveSettingsBtn = document.getElementById('save-settings-btn');
+
             // Payment Modal Elements
             const paymentMethods = document.querySelectorAll('.payment-method');
             const paymentDetails = document.getElementById('payment-details');
@@ -637,6 +724,7 @@
             const reportTotalRevenue = document.getElementById('report-total-revenue');
             const reportTotalTransactions = document.getElementById('report-total-transactions');
             const bestSellersList = document.getElementById('best-sellers-list');
+            const deleteReportBtn = document.getElementById('delete-report-btn');
 
             // --- FUNCTIONS ---
             function init() {
@@ -723,6 +811,22 @@
                 totalEl.textContent = `Rp ${total.toLocaleString('id-ID')}`;
             }
 
+            function openSettingsModal() {
+                bankNameInput.value = settingsData.bankName;
+                accountNumberInput.value = settingsData.accountNumber;
+                accountHolderInput.value = settingsData.accountHolder;
+                settingsModal.style.display = 'block';
+            }
+
+            function saveSettings() {
+                settingsData.bankName = bankNameInput.value;
+                settingsData.accountNumber = accountNumberInput.value;
+                settingsData.accountHolder = accountHolderInput.value;
+                localStorage.setItem('dbonana_settings', JSON.stringify(settingsData));
+                alert('Pengaturan berhasil disimpan!');
+                settingsModal.style.display = 'none';
+            }
+
             function openPaymentModal() {
                 if (order.length === 0) {
                     alert('Pesanan masih kosong!');
@@ -730,6 +834,7 @@
                 }
                 currentPaymentMethod = 'cash';
                 document.querySelector('[data-method="cash"]').classList.add('active');
+                document.querySelector('[data-method="transfer"]').classList.remove('active');
                 document.querySelector('[data-method="qris"]').classList.remove('active');
                 updatePaymentDetails();
                 paymentModal.style.display = 'block';
@@ -753,11 +858,23 @@
                     `;
                     const cashReceivedInput = document.getElementById('cash-received');
                     cashReceivedInput.addEventListener('input', calculateChange);
+                } else if (currentPaymentMethod === 'transfer') {
+                    // Use settingsData here
+                    paymentDetails.innerHTML = `
+                        <div class="transfer-placeholder">
+                            <h3>Silakan transfer ke rekening kami:</h3>
+                            <p style="font-size: 1.2rem; font-weight: bold; margin: 1rem 0;">${settingsData.accountNumber} (${settingsData.bankName})</p>
+                            <p>a.n. ${settingsData.accountHolder}</p>
+                            <hr style="border: 1px dashed #555; margin: 1.5rem 0;">
+                            <p>Total yang harus dibayar:</p>
+                            <p style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-color);">Rp ${total.toLocaleString('id-ID')}</p>
+                        </div>
+                    `;
                 } else { // QRIS
                     paymentDetails.innerHTML = `
                         <p style="text-align: center; font-size: 1.1rem;">Silakan scan QR Code untuk membayar</p>
                         <div class="qris-placeholder">
-                            <img src="https://l.top4top.io/p_363995rjx1.jpeg&data=DN-BONANA-${total}" alt="QRIS">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DN-BONANA-${total}" alt="QRIS">
                             <p>Total: <strong>Rp ${total.toLocaleString('id-ID')}</strong></p>
                         </div>
                     `;
@@ -854,12 +971,12 @@
                     .sort(([,a], [,b]) => b - a)
                     .slice(0, 5);
 
-                bestSellersList.innerHTML = sortedItems.map(([name, count]) => `
+                bestSellersList.innerHTML = sortedItems.length > 0 ? sortedItems.map(([name, count]) => `
                     <li>
                         <span>${name}</span>
                         <span>${count}x</span>
                     </li>
-                `).join('');
+                `).join('') : '<li style="text-align: center; color: var(--text-secondary);">Belum ada data penjualan.</li>';
 
                 // Prepare data for chart
                 const chartLabels = sortedItems.map(item => item[0]);
@@ -907,6 +1024,15 @@
                 });
             }
             
+            function deleteAllSalesData() {
+                if (confirm('PERHATIAN: Ini akan menghapus SEMUA data laporan penjualan secara permanen. Apakah Anda yakin?')) {
+                    salesHistory = [];
+                    localStorage.removeItem('dbonana_sales');
+                    generateReportData(); // Refresh the report view
+                    alert('Semua data laporan telah dihapus.');
+                }
+            }
+
             function updateDateTime() {
                 const now = new Date();
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -917,6 +1043,11 @@
             payBtn.addEventListener('click', openPaymentModal);
             cancelBtn.addEventListener('click', () => { if (confirm('Batalkan pesanan?')) { order = []; renderOrder(); } });
             
+            // Settings Modal Events
+            settingsBtn.addEventListener('click', openSettingsModal);
+            document.getElementById('close-settings-modal').addEventListener('click', () => settingsModal.style.display = 'none');
+            saveSettingsBtn.addEventListener('click', saveSettings);
+
             // Payment Modal Events
             document.getElementById('close-payment-modal').addEventListener('click', () => paymentModal.style.display = 'none');
             paymentMethods.forEach(method => {
@@ -938,8 +1069,10 @@
                 reportModal.style.display = 'block';
             });
             document.getElementById('close-report-modal').addEventListener('click', () => reportModal.style.display = 'none');
+            deleteReportBtn.addEventListener('click', deleteAllSalesData);
 
             window.addEventListener('click', (event) => {
+                if (event.target === settingsModal) settingsModal.style.display = 'none';
                 if (event.target === paymentModal) paymentModal.style.display = 'none';
                 if (event.target === receiptModal) receiptModal.style.display = 'none';
                 if (event.target === reportModal) reportModal.style.display = 'none';
