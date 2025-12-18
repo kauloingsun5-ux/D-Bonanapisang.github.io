@@ -44,16 +44,44 @@
         /* Report & Chart */
         .report-container { width: 100%; height: 100%; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; }
         
+        /* Date Picker Section */
+        .date-filter { background: var(--surface-color); padding: 15px; border-radius: var(--border-radius); margin-bottom: 20px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .date-filter label { font-size: 0.9rem; font-weight: 500; }
+        .date-filter input[type="date"] { 
+            background: #1a1a2e; 
+            border: 1px solid #444; 
+            color: white; 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            font-family: 'Poppins';
+            width: auto;
+            min-width: 150px;
+        }
+        .date-filter button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .date-filter button:hover { background: #3a7bc8; }
+        
         /* Stats Cards */
-        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .stat-card { background: linear-gradient(135deg, var(--surface-color), #34344d); padding: 20px; border-radius: var(--border-radius); border: 1px solid #3d3d5c; text-align: center; transition: transform 0.3s; }
         .stat-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .stat-icon { font-size: 2rem; margin-bottom: 10px; }
-        .stat-value { font-size: 1.8rem; font-weight: 700; margin-bottom: 5px; }
-        .stat-label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
+        .stat-icon { font-size: 1.5rem; margin-bottom: 10px; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
+        .stat-label { font-size: 0.75rem; color: #aaa; text-transform: uppercase; }
         .stat-card:nth-child(1) .stat-icon { color: var(--success-color); }
         .stat-card:nth-child(2) .stat-icon { color: var(--primary-color); }
         .stat-card:nth-child(3) .stat-icon { color: var(--secondary-color); }
+        .stat-card:nth-child(4) .stat-icon { color: #3498db; }
+        .stat-card:nth-child(5) .stat-icon { color: #9b59b6; }
+        .stat-card:nth-child(6) .stat-icon { color: #e67e22; }
         
         .chart-box { background: #1a1a2e; padding: 15px; border-radius: 12px; margin-bottom: 20px; height: 300px; width: 100%; border: 1px solid #333; position: relative; }
         .chart-container { position: relative; height: 100%; width: 100%; }
@@ -78,7 +106,9 @@
         @media (max-width: 768px) { 
             .main-view { flex-direction: column; overflow-y: auto; } 
             .order-section { height: 350px; flex: none; }
-            .stats-container { grid-template-columns: 1fr; }
+            .stats-container { grid-template-columns: repeat(2, 1fr); }
+            .date-filter { flex-direction: column; align-items: stretch; }
+            .date-filter input[type="date"] { width: 100%; }
         }
     </style>
 </head>
@@ -113,6 +143,14 @@
 
     <main id="view-report" class="main-view">
         <div class="report-container">
+            <!-- Date Filter -->
+            <div class="date-filter">
+                <label for="date-picker">Pilih Tanggal:</label>
+                <input type="date" id="date-picker" onchange="filterByDate()">
+                <button onclick="setToday()">Hari Ini</button>
+                <button onclick="setAllDates()">Semua Data</button>
+            </div>
+            
             <!-- Stats Cards -->
             <div class="stats-container">
                 <div class="stat-card">
@@ -129,6 +167,21 @@
                     <i class="fas fa-box stat-icon"></i>
                     <div class="stat-value" id="stat-boxes">0</div>
                     <div class="stat-label">Total Box Terjual</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-hand-holding-usd stat-icon"></i>
+                    <div class="stat-value" id="stat-cash">Rp 0</div>
+                    <div class="stat-label">Total Cash</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-exchange-alt stat-icon"></i>
+                    <div class="stat-value" id="stat-transfer">Rp 0</div>
+                    <div class="stat-label">Total Transfer</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-qrcode stat-icon"></i>
+                    <div class="stat-value" id="stat-qris">Rp 0</div>
+                    <div class="stat-label">Total QRIS</div>
                 </div>
             </div>
             
@@ -262,6 +315,7 @@
         let config = JSON.parse(localStorage.getItem('config_db')) || { name: "D'BONANA", addr: "Jl. Kasir No. 1", bank: "-", qris: "" };
         let myChart = null;
         let lastTrx = null;
+        let filteredSales = [...sales];
 
         function renderMenu() {
             const display = document.getElementById('menu-display');
@@ -404,13 +458,16 @@
             });
         }
 
-        function calculateStats() {
+        function calculateStats(salesData = sales) {
             let totalIncome = 0;
             let todayIncome = 0;
             let totalBoxes = 0;
+            let totalCash = 0;
+            let totalTransfer = 0;
+            let totalQris = 0;
             const today = new Date().toLocaleDateString('id-ID');
             
-            sales.forEach(sale => {
+            salesData.forEach(sale => {
                 // Total income from all sales
                 totalIncome += sale.total;
                 
@@ -423,18 +480,57 @@
                 sale.items.forEach(item => {
                     totalBoxes += item.qty;
                 });
+                
+                // Count by payment method
+                if(sale.method === 'Tunai') {
+                    totalCash += sale.total;
+                } else if(sale.method === 'Transfer') {
+                    totalTransfer += sale.total;
+                } else if(sale.method === 'QRIS') {
+                    totalQris += sale.total;
+                }
             });
             
             // Update the stat cards
             document.getElementById('stat-income').innerText = `Rp ${totalIncome.toLocaleString()}`;
             document.getElementById('stat-omzet').innerText = `Rp ${todayIncome.toLocaleString()}`;
             document.getElementById('stat-boxes').innerText = totalBoxes.toLocaleString();
+            document.getElementById('stat-cash').innerText = `Rp ${totalCash.toLocaleString()}`;
+            document.getElementById('stat-transfer').innerText = `Rp ${totalTransfer.toLocaleString()}`;
+            document.getElementById('stat-qris').innerText = `Rp ${totalQris.toLocaleString()}`;
+        }
+
+        function filterByDate() {
+            const selectedDate = document.getElementById('date-picker').value;
+            if(!selectedDate) {
+                filteredSales = [...sales];
+            } else {
+                // Convert selected date to Indonesian format
+                const dateObj = new Date(selectedDate);
+                const indoDate = dateObj.toLocaleDateString('id-ID');
+                
+                // Filter sales by selected date
+                filteredSales = sales.filter(sale => sale.time.includes(indoDate));
+            }
+            renderReport();
+        }
+
+        function setToday() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date-picker').value = today;
+            filterByDate();
+        }
+
+        function setAllDates() {
+            document.getElementById('date-picker').value = '';
+            filteredSales = [...sales];
+            renderReport();
         }
 
         function renderReport() {
             const body = document.getElementById('report-body');
             body.innerHTML = ''; 
-            if(sales.length === 0) { 
+            if(filteredSales.length === 0) { 
                 body.innerHTML = '<tr><td colspan="3" style="text-align:center">Belum ada data</td></tr>';
                 if(myChart) {
                     myChart.destroy();
@@ -444,14 +540,17 @@
                 document.getElementById('stat-income').innerText = 'Rp 0';
                 document.getElementById('stat-omzet').innerText = 'Rp 0';
                 document.getElementById('stat-boxes').innerText = '0';
+                document.getElementById('stat-cash').innerText = 'Rp 0';
+                document.getElementById('stat-transfer').innerText = 'Rp 0';
+                document.getElementById('stat-qris').innerText = 'Rp 0';
                 return; 
             }
             
             // Calculate and update statistics
-            calculateStats();
+            calculateStats(filteredSales);
             
             let labels = [], data = [];
-            const lastData = sales.slice(-12); // Ambil 12 data terakhir
+            const lastData = filteredSales.slice(-12); // Ambil 12 data terakhir
             lastData.forEach(s => {
                 body.innerHTML = `<tr><td>${s.time}</td><td style="color:var(--success-color); font-weight:bold;">Rp ${s.total.toLocaleString()}</td><td>${s.method}</td></tr>` + body.innerHTML;
                 const timeLabel = s.time.split(' ')[1];
@@ -515,6 +614,7 @@
         function clearSalesData() { 
             if(confirm('Hapus semua data laporan?')) { 
                 sales = []; 
+                filteredSales = [];
                 localStorage.removeItem('sales_db'); 
                 renderReport(); 
             } 
@@ -522,6 +622,8 @@
 
         window.onload = function() {
             renderMenu();
+            // Set today's date as default
+            setToday();
             // Initialize chart with empty data to prevent errors
             const ctx = document.getElementById('salesChart');
             if(ctx) {
