@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Kasir D'bonana</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kasir D'bonana - Final Report Version</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -26,15 +26,11 @@
         body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
         /* --- Header --- */
-        .header { background-color: var(--surface-color); padding: 1rem 1.5rem; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .header { background-color: var(--surface-color); padding: 1rem 1.5rem; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         .header h1 { font-size: 1.5rem; font-weight: 600; color: var(--primary-color); }
-        .header-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-        .header .datetime { font-size: 0.9rem; color: var(--text-secondary); }
-        .header-btn { background-color: var(--primary-color); color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: background-color 0.2s; }
-        .header-btn:hover { background-color: #357ABD; }
-        .header-btn.active { background-color: var(--secondary-color); }
-        .header-btn.stock { background-color: var(--success-color); }
-        .header-btn.stock:hover { background-color: #229954; }
+        .header-actions { display: flex; gap: 0.5rem; }
+        .header-btn { background-color: var(--surface-color); color: white; border: 1px solid #444; padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+        .header-btn.active { background-color: var(--primary-color); border-color: var(--primary-color); }
 
         /* --- Main Views --- */
         .main-view { display: none; flex: 1; padding: 1.5rem; overflow: hidden; }
@@ -42,130 +38,38 @@
 
         /* --- Cashier View --- */
         #view-cashier { gap: 1.5rem; }
-        .menu-section { flex: 2; background-color: var(--surface-color); border-radius: var(--border-radius); padding: 1.5rem; overflow-y: auto; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
-        .menu-category { margin-bottom: 2rem; }
-        .menu-category h2 { font-size: 1.2rem; margin-bottom: 1rem; color: var(--secondary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 0.5rem; }
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
-        .menu-item { background-color: var(--background-color); border: 1px solid #444; border-radius: 8px; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.2s ease-in-out; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
-        .menu-item:hover:not(.out-of-stock) { background-color: var(--primary-color); transform: translateY(-5px); box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4); }
-        .menu-item i { font-size: 2rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
-        .menu-item:hover:not(.out-of-stock) i { color: #fff; }
-        .menu-item .item-name { font-weight: 500; font-size: 0.9rem; }
-        .menu-item .item-price { font-weight: 600; color: var(--secondary-color); margin-top: 0.25rem; }
-        .menu-item:hover:not(.out-of-stock) .item-price { color: #fff; }
-        .menu-item.out-of-stock { background-color: #444; cursor: not-allowed; opacity: 0.6; }
-        
-        .order-section { flex: 1; display: flex; flex-direction: column; background-color: var(--surface-color); border-radius: var(--border-radius); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); overflow: hidden; }
-        .order-header { padding: 1rem 1.5rem; background-color: #333; border-bottom: 1px solid #444; }
-        .order-header h2 { font-size: 1.2rem; font-weight: 600; }
+        .menu-section { flex: 2; background-color: var(--surface-color); border-radius: var(--border-radius); padding: 1.5rem; overflow-y: auto; }
+        .menu-category h2 { font-size: 1.1rem; margin: 1.5rem 0 1rem; color: var(--secondary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 0.3rem; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+        .menu-item { background-color: var(--background-color); border: 1px solid #444; border-radius: 8px; padding: 1rem; text-align: center; cursor: pointer; transition: 0.2s; }
+        .menu-item:hover { transform: translateY(-3px); border-color: var(--primary-color); }
+        .menu-item i { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
+
+        .order-section { flex: 1; display: flex; flex-direction: column; background-color: var(--surface-color); border-radius: var(--border-radius); overflow: hidden; }
         .order-items { flex-grow: 1; overflow-y: auto; padding: 1rem; }
-        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background-color: var(--background-color); border-radius: 8px; margin-bottom: 0.75rem; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-        .order-item-details { flex-grow: 1; }
-        .order-item-name { font-weight: 500; }
-        .order-item-price { font-size: 0.9rem; color: var(--text-secondary); }
-        .order-item-actions { display: flex; align-items: center; gap: 0.5rem; }
-        .btn-quantity { background-color: #555; color: #fff; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s; }
-        .btn-quantity:hover { background-color: var(--primary-color); }
-        .quantity-display { min-width: 30px; text-align: center; font-weight: 600; }
-        .btn-remove { background: none; border: none; color: var(--danger-color); cursor: pointer; font-size: 1.2rem; padding: 0 0.5rem; transition: transform 0.2s; }
-        .btn-remove:hover { transform: scale(1.2); }
-        .order-summary { padding: 1rem 1.5rem; background-color: #333; border-top: 1px solid #444; }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 1rem; }
-        .summary-row.total { font-size: 1.25rem; font-weight: 700; color: var(--secondary-color); padding-top: 0.75rem; border-top: 1px dashed #555; }
-        .order-actions { display: flex; gap: 1rem; padding: 1rem 1.5rem; background-color: #333; }
-        .btn { flex: 1; padding: 0.75rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease-in-out; }
-        .btn-pay { background-color: var(--success-color); color: white; }
-        .btn-pay:hover { background-color: #229954; transform: scale(1.02); }
-        .btn-cancel { background-color: var(--danger-color); color: white; }
-        .btn-cancel:hover { background-color: #c0392b; transform: scale(1.02); }
+        .order-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; background: var(--background-color); border-radius: 8px; margin-bottom: 0.5rem; }
+        .order-summary { padding: 1rem; background: #222; border-top: 1px solid #444; }
 
-        /* --- Dashboard View --- */
-        #view-dashboard { flex-direction: column; }
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .dashboard-header h2 { font-size: 2rem; font-weight: 700; color: var(--primary-color); }
-        .dashboard-content { display: grid; gap: 1.5rem; overflow-y: auto; }
-        .report-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-        .summary-card { background-color: var(--surface-color); padding: 1.5rem; border-radius: var(--border-radius); text-align: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
-        .summary-card h3 { color: var(--text-secondary); font-weight: 400; margin-bottom: 0.5rem; }
-        .summary-card p { font-size: 1.8rem; font-weight: 700; color: var(--secondary-color); }
-        .chart-container { background-color: var(--surface-color); padding: 1.5rem; border-radius: var(--border-radius); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); position: relative; height: 400px; }
-        .best-sellers-container { background-color: var(--surface-color); padding: 1.5rem; border-radius: var(--border-radius); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
-        .best-sellers-container h3 { font-size: 1.2rem; margin-bottom: 1rem; color: var(--secondary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 0.5rem; }
-        .best-sellers-list { list-style: none; }
-        .best-sellers-list li { display: flex; justify-content: space-between; padding: 0.75rem; background-color: var(--background-color); border-radius: 8px; margin-bottom: 0.5rem; }
+        /* --- Dashboard / Report Style --- */
+        .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--surface-color); padding: 1.5rem; border-radius: var(--border-radius); border-left: 4px solid var(--primary-color); }
+        .stat-card h3 { font-size: 0.9rem; color: var(--text-secondary); }
+        .stat-card p { font-size: 1.5rem; font-weight: 700; color: white; }
 
-        /* --- Modal Styles --- */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.7); animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .modal-content { background-color: var(--surface-color); color: var(--text-color); margin: 3% auto; padding: 2rem; border: 1px solid #444; width: 90%; max-width: 500px; border-radius: var(--border-radius); box-shadow: 0 5px 20px rgba(0,0,0,0.5); animation: slideDown 0.4s; }
-        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #555; padding-bottom: 1rem; margin-bottom: 1.5rem; }
-        .modal-header h2 { color: var(--primary-color); }
-        .close-btn { color: var(--text-secondary); font-size: 28px; font-weight: bold; cursor: pointer; }
-        .close-btn:hover { color: #fff; }
-        .input-group { margin-bottom: 1rem; }
-        .input-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-        .input-group input, .input-group select { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #555; background-color: var(--background-color); color: var(--text-color); font-size: 1rem; }
-        .btn-save, .btn-final-pay { width: 100%; padding: 1rem; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
-        .btn-save:hover, .btn-final-pay:hover { background-color: #357ABD; }
-        .btn-final-pay { background-color: var(--success-color); }
-        .btn-final-pay:hover { background-color: #229954; }
-        
-        /* --- Stock Modal Specific --- */
-        .stock-info { display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.9rem; color: var(--text-secondary); }
+        .table-container { background: var(--surface-color); border-radius: var(--border-radius); padding: 1rem; overflow-x: auto; margin-top: 1.5rem; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th { text-align: left; padding: 1rem; border-bottom: 2px solid #444; color: var(--secondary-color); }
+        td { padding: 1rem; border-bottom: 1px solid #444; font-size: 0.9rem; }
 
-        /* --- Payment Modal Specific --- */
-        .payment-methods { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-        .payment-method { flex: 1; padding: 1rem; border: 2px solid #555; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .payment-method:hover, .payment-method.active { border-color: var(--primary-color); background-color: rgba(74, 144, 226, 0.1); }
-        .payment-method i { font-size: 2rem; margin-bottom: 0.5rem; color: var(--secondary-color); }
-        .payment-details { background-color: var(--background-color); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; }
-        .change-display { font-size: 1.2rem; font-weight: 600; color: var(--success-color); text-align: center; padding: 1rem; background-color: #1a1a2e; border-radius: 8px; }
-        .qris-placeholder, .transfer-placeholder { text-align: center; padding: 2rem; border-radius: 8px; }
-        .qris-placeholder { background-color: #fff; color: #333; }
-        .transfer-placeholder { background-color: var(--background-color); border: 1px dashed #555; }
-        .qris-placeholder img { max-width: 200px; margin-bottom: 1rem; }
+        /* --- Modals --- */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); }
+        .modal-content { background-color: var(--surface-color); margin: 5vh auto; padding: 1.5rem; width: 90%; max-width: 500px; border-radius: var(--border-radius); max-height: 85vh; overflow-y: auto; }
+        .btn-final-pay { width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 1rem; }
 
-        /* --- Report Modal --- */
-        .report-content { display: grid; gap: 1.5rem; }
-        
-        /* --- Receipt Modal --- */
-        .receipt-content { background-color: #fefefe; color: #333; padding: 1rem; }
-        .receipt-header, .receipt-footer { text-align: center; }
-        .receipt-header h1 { font-size: 1.8rem; color: var(--primary-color); }
-        .receipt-header p { font-size: 0.9rem; color: #666; }
-        .receipt-body { margin: 1.5rem 0; }
-        .receipt-item { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
-        .receipt-summary { border-top: 1px dashed #ccc; padding-top: 1rem; margin-top: 1rem; }
-        .receipt-summary .summary-row { font-weight: 600; }
-        .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
-        .modal-actions button { flex: 1; padding: 0.75rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-print { background-color: var(--primary-color); color: white; }
-        .btn-print:hover { background-color: #357ABD; }
-        .btn-close-modal { background-color: #95a5a6; color: white; }
-        .btn-close-modal:hover { background-color: #7f8c8d; }
-        .btn-delete-report { background-color: var(--danger-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: background-color 0.2s; }
-        .btn-delete-report:hover { background-color: #c0392b; }
-
-        /* --- Print Styles --- */
-        @media print {
-            body * { visibility: hidden; }
-            .modal-content, .modal-content * { visibility: visible; }
-            .modal-content { position: absolute; left: 0; top: 0; width: 100%; max-width: 100%; box-shadow: none; border: none; margin: 0; padding: 1rem; background: white; color: black; }
-            .modal-actions, .close-btn, .btn-delete-report { display: none; }
-        }
-        
-        /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            #view-cashier { flex-direction: column; }
-            .menu-section, .order-section { flex: 1; width: 100%; }
-            .menu-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-            .header h1 { font-size: 1.2rem; }
-            .header-actions { flex-direction: column; gap: 0.5rem; }
-            .payment-methods { flex-direction: column; }
-            .report-summary { grid-template-columns: 1fr; }
-            .dashboard-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+            body { overflow: auto; height: auto; }
+            .main-view { flex-direction: column; padding: 0.5rem; overflow: visible; }
+            .order-section { height: 400px; margin-top: 1rem; }
         }
     </style>
 </head>
@@ -174,130 +78,91 @@
     <header class="header">
         <h1><i class="fas fa-bowl-food"></i> D'bonana</h1>
         <div class="header-actions">
-            <div class="datetime" id="datetime"></div>
-            <button class="header-btn" id="dashboard-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
-            <button class="header-btn active" id="cashier-btn"><i class="fas fa-cash-register"></i> Kasir</button>
-            <button class="header-btn stock" id="stock-btn"><i class="fas fa-boxes"></i> Stok</button>
-            <button class="header-btn" id="settings-btn"><i class="fas fa-cog"></i> Pengaturan</button>
+            <button class="header-btn active" id="cashier-btn">Kasir</button>
+            <button class="header-btn" id="dashboard-btn">Laporan</button>
         </div>
     </header>
 
-    <!-- Cashier View -->
     <main id="view-cashier" class="main-view active">
         <section class="menu-section" id="menu-section"></section>
         <section class="order-section">
-            <div class="order-header"><h2>Pesanan</h2></div>
+            <div style="padding: 10px; background: #333; font-size: 0.8rem; text-align: center;" id="current-date"></div>
             <div class="order-items" id="order-items"></div>
             <div class="order-summary">
-                <div class="summary-row"><span>Subtotal:</span><span id="subtotal">Rp 0</span></div>
-                <div class="summary-row total"><span>Total:</span><span id="total">Rp 0</span></div>
-            </div>
-            <div class="order-actions">
-                <button class="btn btn-cancel" id="cancel-btn"><i class="fas fa-times-circle"></i> Batal</button>
-                <button class="btn btn-pay" id="pay-btn"><i class="fas fa-check-circle"></i> Bayar</button>
+                <div class="summary-row total" style="display:flex; justify-content:space-between;"><span>Total:</span><span id="total">Rp 0</span></div>
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <button class="btn-final-pay" style="background: var(--danger-color);" id="cancel-btn">Reset</button>
+                    <button class="btn-final-pay" id="pay-btn">Bayar</button>
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- Dashboard View -->
     <main id="view-dashboard" class="main-view">
-        <div class="dashboard-header">
-            <h2>Dashboard Penjualan</h2>
-            <button class="btn-delete-report" id="delete-report-btn"><i class="fas fa-trash-alt"></i> Hapus Semua Data</button>
-        </div>
-        <div class="dashboard-content">
-            <div class="report-summary">
-                <div class="summary-card"><h3>Total Pendapatan</h3><p id="report-total-revenue">Rp 0</p></div>
-                <div class="summary-card"><h3>Total Pengeluaran Stok</h3><p id="report-total-expense">Rp 0</p></div>
-                <div class="summary-card"><h3>Keuntungan Bersih</h3><p id="report-net-profit">Rp 0</p></div>
-                <div class="summary-card"><h3>Total Transaksi</h3><p id="report-total-transactions">0</p></div>
+        <div style="width: 100%; overflow-y: auto; padding-right: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2>Laporan Penjualan</h2>
+                <button id="delete-report-btn" class="header-btn" style="background: var(--danger-color); border:none;">Hapus Semua Data</button>
             </div>
-            <div class="chart-container">
+
+            <div class="stat-cards">
+                <div class="stat-card">
+                    <h3>Total Omzet</h3>
+                    <p id="stat-revenue">Rp 0</p>
+                </div>
+                <div class="stat-card" style="border-left-color: var(--secondary-color);">
+                    <h3>Total Box Terjual</h3>
+                    <p id="stat-boxes">0 Box</p>
+                </div>
+            </div>
+
+            <div style="background: var(--surface-color); padding: 1rem; border-radius: 8px; height: 300px;">
                 <canvas id="sales-chart"></canvas>
             </div>
-            <div class="best-sellers-container">
-                <h3>Produk Terlaris</h3>
-                <ul class="best-sellers-list" id="best-sellers-list"></ul>
+
+            <div class="table-container">
+                <h3>Riwayat Penjualan</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Waktu / Tanggal</th>
+                            <th>Item Pesanan</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sales-table-body"></tbody>
+                </table>
             </div>
         </div>
     </main>
 
-    <!-- Stock Modal -->
-    <div id="stock-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Catat Pembelian Stok</h2>
-                <span class="close-btn" id="close-stock-modal">&times;</span>
-            </div>
-            <div class="payment-details">
-                <div class="input-group">
-                    <label for="stock-item-select">Pilih Item</label>
-                    <select id="stock-item-select"></select>
-                    <div class="stock-info" id="stock-info">Stok Saat Ini: 0</div>
-                </div>
-                <div class="input-group">
-                    <label for="stock-quantity">Jumlah Dibeli</label>
-                    <input type="number" id="stock-quantity" placeholder="Contoh: 20" min="1">
-                </div>
-                <div class="input-group">
-                    <label for="stock-cost">Total Harga Pembelian</label>
-                    <input type="number" id="stock-cost" placeholder="Contoh: 200000" min="1">
-                </div>
-            </div>
-            <button class="btn-save" id="save-stock-btn">Simpan Pembelian</button>
-        </div>
-    </div>
-
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Pengaturan Rekening Transfer</h2>
-                <span class="close-btn" id="close-settings-modal">&times;</span>
-            </div>
-            <div class="payment-details">
-                <div class="input-group"><label for="bank-name">Nama Bank</label><input type="text" id="bank-name" placeholder="Contoh: BCA"></div>
-                <div class="input-group"><label for="account-number">Nomor Rekening</label><input type="text" id="account-number" placeholder="Contoh: 123-456-7890"></div>
-                <div class="input-group"><label for="account-holder">Atas Nama</label><input type="text" id="account-holder" placeholder="Contoh: D'bonana Indonesia"></div>
-            </div>
-            <button class="btn-save" id="save-settings-btn">Simpan Perubahan</button>
-        </div>
-    </div>
-
-    <!-- Payment Modal -->
     <div id="payment-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Pilih Metode Pembayaran</h2>
-                <span class="close-btn" id="close-payment-modal">&times;</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                <h3>Pembayaran</h3>
+                <span style="cursor: pointer;" id="close-payment-modal">&times;</span>
             </div>
             <div class="payment-methods">
-                <div class="payment-method active" data-method="cash"><i class="fas fa-money-bill-wave"></i><p>Tunai (Cash)</p></div>
-                <div class="payment-method" data-method="transfer"><i class="fas fa-exchange-alt"></i><p>Transfer</p></div>
-                <div class="payment-method" data-method="qris"><i class="fas fa-qrcode"></i><p>QRIS</p></div>
+                <div class="payment-method active" data-method="cash">Tunai</div>
+                <div class="payment-method" data-method="transfer">Transfer</div>
+                <div class="payment-method" data-method="qris">QRIS</div>
             </div>
-            <div class="payment-details" id="payment-details"></div>
-            <button class="btn-final-pay" id="btn-final-pay">Bayar Sekarang</button>
+            <div id="payment-details" style="background: var(--background-color); padding: 1rem; border-radius: 8px;"></div>
+            <button class="btn-final-pay" id="btn-final-pay">Selesaikan Transaksi</button>
         </div>
     </div>
 
-    <!-- Receipt Modal -->
     <div id="receipt-modal" class="modal">
-        <div class="modal-content receipt-content">
-            <div id="receipt-content"></div>
-            <div class="modal-actions">
-                <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Cetak</button>
-                <button class="btn-close-modal" id="close-receipt-modal"><i class="fas fa-times"></i> Tutup</button>
-            </div>
+        <div class="modal-content" style="background: white; color: black; max-width: 350px;">
+            <div id="receipt-content" style="font-family: monospace; white-space: pre-wrap;"></div>
+            <button onclick="window.print()" class="btn-final-pay" style="background: var(--primary-color);">Cetak</button>
+            <button id="close-receipt-modal" class="btn-final-pay" style="background: #999;">Tutup</button>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- DATA & STATE ---
-            const RESTAURANT_INFO = { name: "D'bonana", address: "Jl. Rasa No. 99, Enak City", phone: "021-987654321" };
-            const initialMenuData = [
-                // D'bonana Menu
+        const menuData = [
+            // D'bonana Menu
                 { id: 1, category: 'D\'bonana', name: 'Ori', price: 14000, icon: 'fa-star' },
                 { id: 2, category: 'D\'bonana', name: 'Susu', price: 15000, icon: 'fa-glass-water' },
                 { id: 3, category: 'D\'bonana', name: 'Coklat', price: 18000, icon: 'fa-ice-cream' },
@@ -307,394 +172,182 @@
                 { id: 7, category: 'D\'bonana', name: 'Matcha', price: 18000, icon: 'fa-leaf' },
                 { id: 8, category: 'D\'bonana', name: 'Oreo', price: 18000, icon: 'fa-cookie' },
                 // D'bonana Mix
-                { id: 7, category: 'Mix', name: 'Coklat - Tiramisu', price: 23000, icon: 'fa-blender' },
-                { id: 8, category: 'Mix', name: 'Coklat - Oreo', price: 23000, icon: 'fa-blender' },
-                { id: 9, category: 'Mix', name: 'Coklat - Matcha', price: 23000, icon: 'fa-blender' },
-                { id: 10, category: 'Mix', name: 'Tiramisu - Matcha', price: 23000, icon: 'fa-blender' },
-                { id: 11, category: 'Mix', name: 'Tiramisu - Oreo', price: 23000, icon: 'fa-blender' },
-                { id: 12, category: 'Mix', name: 'Matcha - Oreo', price: 23000, icon: 'fa-blender' },
-                { id: 13, category: 'Mix', name: 'Keju - Coklat', price: 23000, icon: 'fa-blender' },
-                { id: 14, category: 'Mix', name: 'Keju - Tiramisu', price: 23000, icon: 'fa-blender' },
-                { id: 15, category: 'Mix', name: 'Keju - Matcha', price: 23000, icon: 'fa-blender' },
-                { id: 16, category: 'Mix', name: 'Keju - Oreo', price: 23000, icon: 'fa-blender' },
+                { id: 7, category: 'Mix', name: 'Coklat - Tiramisu', price: 20000, icon: 'fa-blender' },
+                { id: 8, category: 'Mix', name: 'Coklat - Oreo', price: 20000, icon: 'fa-blender' },
+                { id: 9, category: 'Mix', name: 'Coklat - Matcha', price: 20000, icon: 'fa-blender' },
+                { id: 10, category: 'Mix', name: 'Tiramisu - Matcha', price: 20000, icon: 'fa-blender' },
+                { id: 11, category: 'Mix', name: 'Tiramisu - Oreo', price: 20000, icon: 'fa-blender' },
+                { id: 12, category: 'Mix', name: 'Matcha - Oreo', price: 20000, icon: 'fa-blender' },
+                { id: 13, category: 'Mix', name: 'palm-matcha', price: 20000, icon: 'fa-blender' },
+                { id: 14, category: 'Mix', name: 'palm-coklat', price: 20000, icon: 'fa-blender' },
+                { id: 15, category: 'Mix', name: 'palm-tiramisu', price: 20000, icon: 'fa-blender' },
+                { id: 16, category: 'Mix', name: 'palm-oreo', price: 20000, icon: 'fa-blender' },
+                { id: 17, category: 'Mix', name: 'Keju - Coklat', price: 23000, icon: 'fa-blender' },
+                { id: 18, category: 'Mix', name: 'Keju - Tiramisu', price: 23000, icon: 'fa-blender' },
+                { id: 19, category: 'Mix', name: 'Keju - Matcha', price: 23000, icon: 'fa-blender' },
+                { id: 20, category: 'Mix', name: 'Keju - Oreo', price: 23000, icon: 'fa-blender' },
+                { id: 21, category: 'Mix', name: 'keju-palm', price: 23000, icon: 'fa-blender' },
+                                 
                 // Ketan Susu Menu
-                { id: 17, category: 'Ketan Susu', name: 'Ketan Susu Original', price: 15000, icon: 'fa-bowl-rice' },
-                { id: 18, category: 'Ketan Susu', name: 'Ketan Coklat', price: 15000, icon: 'fa-ice-cream' },
-                { id: 19, category: 'Ketan Susu', name: 'Ketan Keju', price: 15000, icon: 'fa-cheese' },
-                { id: 20, category: 'Ketan Susu', name: 'Ketan Palm Sugar', price: 15000, icon: 'fa-cube' },
-                { id: 21, category: 'Ketan Susu', name: 'Ketan Tiramisu', price: 15000, icon: 'fa-bowl-food' },
-                { id: 22, category: 'Ketan Susu', name: 'Ketan Matcha', price: 15000, icon: 'fa-leaf' },
-                { id: 23, category: 'Ketan Susu', name: 'Ketan Oreo', price: 15000, icon: 'fa-cookie' },
+                { id: 22, category: 'Ketan Susu', name: 'Ketan Susu Original', price: 10000, icon: 'fa-bowl-rice' },
+                { id: 23, category: 'Ketan Susu', name: 'Ketan Coklat', price: 13000, icon: 'fa-ice-cream' },
+                { id: 24, category: 'Ketan Susu', name: 'Ketan Keju', price: 13000, icon: 'fa-cheese' },
+                { id: 25, category: 'Ketan Susu', name: 'Ketan Palm Sugar', price: 13000, icon: 'fa-cube' },
+                { id: 26, category: 'Ketan Susu', name: 'Ketan Tiramisu', price: 13000, icon: 'fa-bowl-food' },
+                { id: 27, category: 'Ketan Susu', name: 'Ketan Matcha', price: 13000, icon: 'fa-leaf' },
+                { id: 28, category: 'Ketan Susu', name: 'Ketan Oreo', price: 13000, icon: 'fa-cookie' },
                 // Ketan Susu Mix
-                { id: 24, category: 'Ketan Susu Mix', name: 'Coklat - Keju', price: 15000, icon: 'fa-blender' },
-                { id: 25, category: 'Ketan Susu Mix', name: 'Coklat - Oreo', price: 15000, icon: 'fa-blender' },
-                { id: 26, category: 'Ketan Susu Mix', name: 'Coklat - Matcha', price: 15000, icon: 'fa-blender' },
-                { id: 27, category: 'Ketan Susu Mix', name: 'Coklat - Tiramisu', price: 15000, icon: 'fa-blender' },
-                { id: 28, category: 'Ketan Susu Mix', name: 'Coklat - Palm Sugar', price: 15000, icon: 'fa-blender' },
-                { id: 29, category: 'Ketan Susu Mix', name: 'Keju - Tiramisu', price: 15000, icon: 'fa-blender' },
-                { id: 30, category: 'Ketan Susu Mix', name: 'Keju - Oreo', price: 15000, icon: 'fa-blender' },
-                { id: 31, category: 'Ketan Susu Mix', name: 'Keju - Matcha', price: 15000, icon: 'fa-blender' },
-                { id: 32, category: 'Ketan Susu Mix', name: 'Keju - Palm Sugar', price: 15000, icon: 'fa-blender' },
-                { id: 33, category: 'Ketan Susu Mix', name: 'Matcha - Oreo', price: 15000, icon: 'fa-blender' },
-                { id: 34, category: 'Ketan Susu Mix', name: 'Matcha - Palm Sugar', price: 15000, icon: 'fa-blender' },
-                { id: 35, category: 'Ketan Susu Mix', name: 'Oreo - Palm Sugar', price: 15000, icon: 'fa-blender' },
-                { id: 36, category: 'Ketan Susu Mix', name: 'Palm Sugar - Tiramisu', price: 15000, icon: 'fa-blender' },
+                { id: 29, category: 'Ketan Susu Mix', name: 'Coklat - Keju', price: 15000, icon: 'fa-blender' },
+                { id: 30, category: 'Ketan Susu Mix', name: 'Coklat - Oreo', price: 15000, icon: 'fa-blender' },
+                { id: 31, category: 'Ketan Susu Mix', name: 'Coklat - Matcha', price: 15000, icon: 'fa-blender' },
+                { id: 32, category: 'Ketan Susu Mix', name: 'Coklat - Tiramisu', price: 15000, icon: 'fa-blender' },
+                { id: 33, category: 'Ketan Susu Mix', name: 'Coklat - Palm Sugar', price: 15000, icon: 'fa-blender' },
+                { id: 34, category: 'Ketan Susu Mix', name: 'Keju - Tiramisu', price: 15000, icon: 'fa-blender' },
+                { id: 35, category: 'Ketan Susu Mix', name: 'Keju - Oreo', price: 15000, icon: 'fa-blender' },
+                { id: 36, category: 'Ketan Susu Mix', name: 'Keju - Matcha', price: 15000, icon: 'fa-blender' },
+                { id: 37, category: 'Ketan Susu Mix', name: 'Keju - Palm Sugar', price: 15000, icon: 'fa-blender' },
+                { id: 38, category: 'Ketan Susu Mix', name: 'Matcha - Oreo', price: 15000, icon: 'fa-blender' },
+                { id: 39, category: 'Ketan Susu Mix', name: 'Matcha - Palm Sugar', price: 15000, icon: 'fa-blender' },
+                { id: 40, category: 'Ketan Susu Mix', name: 'Oreo - Palm Sugar', price: 15000, icon: 'fa-blender' },
+                { id: 41, category: 'Ketan Susu Mix', name: 'Palm Sugar - Tiramisu', price: 15000, icon: 'fa-blender' },
                   
             ];
-            
-            let menuData = JSON.parse(localStorage.getItem('dbonana_menu')) || initialMenuData.map(item => ({ ...item, stock: 50 }));
-            let order = [];
-            let salesHistory = JSON.parse(localStorage.getItem('dbonana_sales')) || [];
-            let stockHistory = JSON.parse(localStorage.getItem('dbonana_stock_history')) || [];
-            let currentPaymentMethod = 'cash';
-            let salesChart = null;
-            
-            let settingsData = JSON.parse(localStorage.getItem('dbonana_settings')) || { bankName: 'BCA', accountNumber: '123-456-7890', accountHolder: 'D\'bonana Indonesia' };
 
-            // --- DOM ELEMENTS ---
-            // Views
-            const viewCashier = document.getElementById('view-cashier');
-            const viewDashboard = document.getElementById('view-dashboard');
-            
-            // Header
-            const dashboardBtn = document.getElementById('dashboard-btn');
-            const cashierBtn = document.getElementById('cashier-btn');
-            const datetimeEl = document.getElementById('datetime');
-            
-            // Cashier View Elements
-            const menuSection = document.getElementById('menu-section');
-            const orderItemsContainer = document.getElementById('order-items');
-            const subtotalEl = document.getElementById('subtotal');
-            const totalEl = document.getElementById('total');
-            const payBtn = document.getElementById('pay-btn');
-            const cancelBtn = document.getElementById('cancel-btn');
-            
-            // Dashboard View Elements
-            const reportTotalRevenue = document.getElementById('report-total-revenue');
-            const reportTotalExpense = document.getElementById('report-total-expense');
-            const reportNetProfit = document.getElementById('report-net-profit');
-            const reportTotalTransactions = document.getElementById('report-total-transactions');
-            const bestSellersList = document.getElementById('best-sellers-list');
-            const deleteReportBtn = document.getElementById('delete-report-btn');
 
-            // Modals
-            const stockModal = document.getElementById('stock-modal');
-            const settingsModal = document.getElementById('settings-modal');
-            const paymentModal = document.getElementById('payment-modal');
-            const receiptModal = document.getElementById('receipt-modal');
-            
-            // Stock Modal Elements
-            const stockBtn = document.getElementById('stock-btn');
-            const stockItemSelect = document.getElementById('stock-item-select');
-            const stockInfo = document.getElementById('stock-info');
-            const stockQuantityInput = document.getElementById('stock-quantity');
-            const stockCostInput = document.getElementById('stock-cost');
-            const saveStockBtn = document.getElementById('save-stock-btn');
+        let order = [];
+        let salesHistory = JSON.parse(localStorage.getItem('dbonana_sales')) || [];
+        let currentMethod = 'cash';
 
-            // Settings Modal Elements
-            const settingsBtn = document.getElementById('settings-btn');
-            const bankNameInput = document.getElementById('bank-name');
-            const accountNumberInput = document.getElementById('account-number');
-            const accountHolderInput = document.getElementById('account-holder');
-            const saveSettingsBtn = document.getElementById('save-settings-btn');
+        // Tampilkan Tanggal Hari Ini
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', options);
 
-            // Payment Modal Elements
-            const paymentMethods = document.querySelectorAll('.payment-method');
-            const paymentDetails = document.getElementById('payment-details');
-            const btnFinalPay = document.getElementById('btn-final-pay');
-            
-            // Receipt Modal Elements
-            const closeReceiptModalBtn = document.getElementById('close-receipt-modal');
+        function renderMenu() {
+            const section = document.getElementById('menu-section');
+            const groups = menuData.reduce((acc, item) => {
+                if (!acc[item.category]) acc[item.category] = [];
+                acc[item.category].push(item);
+                return acc;
+            }, {});
 
-            // --- FUNCTIONS ---
-            function init() {
-                renderMenu();
-                renderOrder();
-                updateDateTime();
-                setInterval(updateDateTime, 1000);
-            }
-
-            function showView(view) {
-                if (view === 'dashboard') {
-                    viewCashier.classList.remove('active');
-                    viewDashboard.classList.add('active');
-                    dashboardBtn.classList.add('active');
-                    cashierBtn.classList.remove('active');
-                    populateDashboard();
-                } else {
-                    viewDashboard.classList.remove('active');
-                    viewCashier.classList.add('active');
-                    cashierBtn.classList.add('active');
-                    dashboardBtn.classList.remove('active');
-                }
-            }
-
-            function saveToLocalStorage() {
-                localStorage.setItem('dbonana_menu', JSON.stringify(menuData));
-                localStorage.setItem('dbonana_sales', JSON.stringify(salesHistory));
-                localStorage.setItem('dbonana_stock_history', JSON.stringify(stockHistory));
-            }
-
-            function renderMenu() {
-                const categorizedMenu = menuData.reduce((acc, item) => { if (!acc[item.category]) acc[item.category] = []; acc[item.category].push(item); return acc; }, {});
-                menuSection.innerHTML = '';
-                for (const category in categorizedMenu) {
-                    const categoryDiv = document.createElement('div');
-                    categoryDiv.className = 'menu-category';
-                    categoryDiv.innerHTML = `<h2>${category}</h2><div class="menu-grid"></div>`;
-                    const gridDiv = categoryDiv.querySelector('.menu-grid');
-                    categorizedMenu[category].forEach(item => {
-                        const itemButton = document.createElement('button');
-                        itemButton.className = `menu-item ${item.stock <= 0 ? 'out-of-stock' : ''}`;
-                        itemButton.innerHTML = `
-                            <i class="fas ${item.icon}"></i>
-                            <div class="item-name">${item.name}</div>
-                            <div class="item-price">Rp ${item.price.toLocaleString('id-ID')}</div>
-                        `;
-                        if (item.stock > 0) {
-                            itemButton.addEventListener('click', () => addToOrder(item));
-                        }
-                        gridDiv.appendChild(itemButton);
-                    });
-                    menuSection.appendChild(categoryDiv);
-                }
-            }
-
-            function addToOrder(item) {
-                if (item.stock <= 0) return;
-                const existingItem = order.find(o => o.id === item.id);
-                if (existingItem) existingItem.quantity++;
-                else order.push({ ...item, quantity: 1 });
-                renderOrder();
-            }
-
-            function renderOrder() {
-                orderItemsContainer.innerHTML = '';
-                if (order.length === 0) {
-                    orderItemsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding-top: 2rem;">Belum ada pesanan.</p>';
-                } else {
-                    order.forEach(item => {
-                        const orderItemDiv = document.createElement('div');
-                        orderItemDiv.className = 'order-item';
-                        const detailsDiv = document.createElement('div');
-                        detailsDiv.className = 'order-item-details';
-                        detailsDiv.innerHTML = `<div class="order-item-name">${item.name}</div><div class="order-item-price">Rp ${item.price.toLocaleString('id-ID')}</div>`;
-                        orderItemDiv.appendChild(detailsDiv);
-                        const actionsDiv = document.createElement('div');
-                        actionsDiv.className = 'order-item-actions';
-                        const btnMinus = document.createElement('button'); btnMinus.className = 'btn-quantity'; btnMinus.textContent = '-'; btnMinus.addEventListener('click', () => updateQuantity(item.id, -1));
-                        const quantitySpan = document.createElement('span'); quantitySpan.className = 'quantity-display'; quantitySpan.textContent = item.quantity;
-                        const btnPlus = document.createElement('button'); btnPlus.className = 'btn-quantity'; btnPlus.textContent = '+'; btnPlus.addEventListener('click', () => updateQuantity(item.id, 1));
-                        const btnRemove = document.createElement('button'); btnRemove.className = 'btn-remove'; btnRemove.innerHTML = '<i class="fas fa-trash"></i>'; btnRemove.addEventListener('click', () => removeFromOrder(item.id));
-                        actionsDiv.appendChild(btnMinus); actionsDiv.appendChild(quantitySpan); actionsDiv.appendChild(btnPlus); actionsDiv.appendChild(btnRemove);
-                        orderItemDiv.appendChild(actionsDiv);
-                        orderItemsContainer.appendChild(orderItemDiv);
-                    });
-                }
-                updateSummary();
-            }
-
-            function updateQuantity(itemId, change) {
-                const item = order.find(o => o.id === itemId);
-                if (item) { item.quantity += change; if (item.quantity <= 0) removeFromOrder(itemId); else renderOrder(); }
-            }
-
-            function removeFromOrder(itemId) { order = order.filter(o => o.id !== itemId); renderOrder(); }
-
-            function updateSummary() {
-                const subtotal = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                const total = subtotal;
-                subtotalEl.textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
-                totalEl.textContent = `Rp ${total.toLocaleString('id-ID')}`;
-            }
-            
-            // --- Stock Functions ---
-            function openStockModal() {
-                stockItemSelect.innerHTML = '';
-                menuData.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.id;
-                    option.textContent = `${item.name} (Stok: ${item.stock})`;
-                    stockItemSelect.appendChild(option);
+            section.innerHTML = '';
+            for (const cat in groups) {
+                const div = document.createElement('div');
+                div.className = 'menu-category';
+                div.innerHTML = `<h2>${cat}</h2><div class="menu-grid"></div>`;
+                const grid = div.querySelector('.menu-grid');
+                groups[cat].forEach(item => {
+                    const btn = document.createElement('div');
+                    btn.className = 'menu-item';
+                    btn.innerHTML = `<i class="fas ${item.icon}"></i><div>${item.name}</div><div class="item-price">Rp ${item.price.toLocaleString()}</div>`;
+                    btn.onclick = () => {
+                        const existing = order.find(o => o.id === item.id);
+                        if (existing) existing.quantity++;
+                        else order.push({...item, quantity: 1});
+                        renderOrder();
+                    };
+                    grid.appendChild(btn);
                 });
-                updateStockInfo();
-                stockModal.style.display = 'block';
+                section.appendChild(div);
             }
+        }
 
-            function updateStockInfo() {
-                const selectedItemId = parseInt(stockItemSelect.value);
-                const selectedItem = menuData.find(item => item.id === selectedItemId);
-                stockInfo.textContent = `Stok Saat Ini: ${selectedItem ? selectedItem.stock : 0}`;
-            }
+        function renderOrder() {
+            const container = document.getElementById('order-items');
+            container.innerHTML = '';
+            let total = 0;
+            order.forEach(item => {
+                total += item.price * item.quantity;
+                container.innerHTML += `<div class="order-item"><div>${item.name} x${item.quantity}</div><div>Rp ${(item.price * item.quantity).toLocaleString()}</div></div>`;
+            });
+            document.getElementById('total').innerText = `Rp ${total.toLocaleString()}`;
+        }
 
-            function saveStockPurchase() {
-                const itemId = parseInt(stockItemSelect.value);
-                const quantity = parseInt(stockQuantityInput.value);
-                const cost = parseInt(stockCostInput.value);
-                if (!itemId || !quantity || !cost) { alert('Mohon isi semua field dengan benar.'); return; }
-                const item = menuData.find(i => i.id === itemId);
-                item.stock += quantity;
-                const purchaseRecord = { id: Date.now(), timestamp: new Date().toISOString(), itemName: item.name, quantity: quantity, cost: cost };
-                stockHistory.push(purchaseRecord);
-                saveToLocalStorage();
-                renderMenu();
-                stockModal.style.display = 'none';
-                alert(`Pembelian stok ${quantity}x ${item.name} berhasil dicatat!`);
-            }
+        document.getElementById('pay-btn').onclick = () => {
+            if (!order.length) return alert('Keranjang masih kosong!');
+            document.getElementById('payment-modal').style.display = 'block';
+            updatePaymentUI();
+        };
 
-            // --- Settings Functions ---
-            function openSettingsModal() {
-                bankNameInput.value = settingsData.bankName;
-                accountNumberInput.value = settingsData.accountNumber;
-                accountHolderInput.value = settingsData.accountHolder;
-                settingsModal.style.display = 'block';
-            }
+        function updatePaymentUI() {
+            const total = order.reduce((a, b) => a + (b.price * b.quantity), 0);
+            document.getElementById('payment-details').innerHTML = `<p>Total: Rp ${total.toLocaleString()}</p><input type="number" id="cash-in" placeholder="Masukkan Uang" style="width:100%; padding:10px; margin-top:10px; background:#1a1a2e; color:white; border:1px solid #444;">`;
+        }
 
-            function saveSettings() {
-                settingsData.bankName = bankNameInput.value;
-                settingsData.accountNumber = accountNumberInput.value;
-                settingsData.accountHolder = accountHolderInput.value;
-                localStorage.setItem('dbonana_settings', JSON.stringify(settingsData));
-                alert('Pengaturan berhasil disimpan!');
-                settingsModal.style.display = 'none';
-            }
-
-            // --- Payment Functions ---
-            function openPaymentModal() {
-                if (order.length === 0) { alert('Pesanan masih kosong!'); return; }
-                currentPaymentMethod = 'cash';
-                document.querySelector('[data-method="cash"]').classList.add('active');
-                document.querySelectorAll('.payment-method:not([data-method="cash"])').forEach(m => m.classList.remove('active'));
-                updatePaymentDetails();
-                paymentModal.style.display = 'block';
-            }
-
-            function updatePaymentDetails() {
-                const total = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                if (currentPaymentMethod === 'cash') {
-                    paymentDetails.innerHTML = `<div class="input-group"><label>Total Bayar</label><input type="text" value="Rp ${total.toLocaleString('id-ID')}" disabled></div><div class="input-group"><label>Uang Diterima</label><input type="number" id="cash-received" placeholder="Masukkan jumlah uang"></div><div class="change-display" id="change-display">Kembalian: Rp 0</div>`;
-                    document.getElementById('cash-received').addEventListener('input', calculateChange);
-                } else if (currentPaymentMethod === 'transfer') {
-                    paymentDetails.innerHTML = `<div class="transfer-placeholder"><h3>Silakan transfer ke rekening kami:</h3><p style="font-size: 1.2rem; font-weight: bold; margin: 1rem 0;">${settingsData.accountNumber} (${settingsData.bankName})</p><p>a.n. ${settingsData.accountHolder}</p><hr style="border: 1px dashed #555; margin: 1.5rem 0;"><p>Total yang harus dibayar:</p><p style="font-size: 1.5rem; font-weight: bold; color: var(--secondary-color);">Rp ${total.toLocaleString('id-ID')}</p></div>`;
-                } else { // QRIS
-                    paymentDetails.innerHTML = `<p style="text-align: center; font-size: 1.1rem;">Silakan scan QR Code untuk membayar</p><div class="qris-placeholder"><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DN-BONANA-${total}" alt="QRIS"><p>Total: <strong>Rp ${total.toLocaleString('id-ID')}</strong></p></div>`;
-                }
-            }
-
-            function calculateChange() {
-                const total = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                const cashReceived = parseInt(document.getElementById('cash-received').value) || 0;
-                const change = cashReceived - total;
-                const changeDisplay = document.getElementById('change-display');
-                if (change >= 0) { changeDisplay.textContent = `Kembalian: Rp ${change.toLocaleString('id-ID')}`; changeDisplay.style.color = 'var(--success-color)'; btnFinalPay.disabled = false; }
-                else { changeDisplay.textContent = `Uang kurang: Rp ${Math.abs(change).toLocaleString('id-ID')}`; changeDisplay.style.color = 'var(--danger-color)'; btnFinalPay.disabled = true; }
-            }
-
-            function processPayment() {
-                const total = order.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                order.forEach(orderItem => { const menuItem = menuData.find(m => m.id === orderItem.id); if (menuItem) menuItem.stock -= orderItem.quantity; });
-                const transaction = { id: Date.now(), timestamp: new Date().toISOString(), items: [...order], total: total, paymentMethod: currentPaymentMethod };
-                salesHistory.push(transaction);
-                saveToLocalStorage();
-                generateReceipt(transaction);
-                paymentModal.style.display = 'none';
-                order = [];
-                renderOrder();
-                renderMenu();
-            }
-
-            function generateReceipt(transaction) {
-                const receiptItemsHTML = transaction.items.map(item => `<div class="receipt-item"><span>${item.name} x${item.quantity}</span><span>Rp ${(item.price * item.quantity).toLocaleString('id-ID')}</span></div>`).join('');
-                document.getElementById('receipt-content').innerHTML = `
-                    <div class="receipt-header"><h1>${RESTAURANT_INFO.name}</h1><p>${RESTAURANT_INFO.address}</p><p>Telp: ${RESTAURANT_INFO.phone}</p></div>
-                    <div class="receipt-body"><p>No: ${transaction.id}</p><p>${new Date(transaction.timestamp).toLocaleString('id-ID')}</p><p>Metode: ${transaction.paymentMethod.toUpperCase()}</p><p style="text-align: center; margin: 1rem 0;">================================</p>${receiptItemsHTML}<p style="text-align: center; margin: 1rem 0;">================================</p><div class="receipt-summary"><div class="summary-row total"><span>Total Bayar:</span><span>Rp ${transaction.total.toLocaleString('id-ID')}</span></div></div></div>
-                    <div class="receipt-footer"><p>Terima Kasih</p><p>Silakan Datang Kembali</p></div>
-                `;
-                receiptModal.style.display = 'block';
-            }
-
-            // --- Dashboard Functions ---
-            function populateDashboard() {
-                const totalRevenue = salesHistory.reduce((sum, sale) => sum + sale.total, 0);
-                const totalExpense = stockHistory.reduce((sum, purchase) => sum + purchase.cost, 0);
-                const netProfit = totalRevenue - totalExpense;
-                const totalTransactions = salesHistory.length;
-
-                reportTotalRevenue.textContent = `Rp ${totalRevenue.toLocaleString('id-ID')}`;
-                reportTotalExpense.textContent = `Rp ${totalExpense.toLocaleString('id-ID')}`;
-                reportNetProfit.textContent = `Rp ${netProfit.toLocaleString('id-ID')}`;
-                reportNetProfit.style.color = netProfit >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
-                reportTotalTransactions.textContent = totalTransactions;
-
-                const itemCounts = {};
-                salesHistory.forEach(sale => { sale.items.forEach(item => { if (itemCounts[item.name]) itemCounts[item.name] += item.quantity; else itemCounts[item.name] = item.quantity; }); });
-                const sortedItems = Object.entries(itemCounts).sort(([,a], [,b]) => b - a).slice(0, 5);
-                bestSellersList.innerHTML = sortedItems.length > 0 ? sortedItems.map(([name, count]) => `<li><span>${name}</span><span>${count}x</span></li>`).join('') : '<li style="text-align: center; color: var(--text-secondary);">Belum ada data penjualan.</li>';
-
-                const chartLabels = sortedItems.map(item => item[0]);
-                const chartData = sortedItems.map(item => item[1]);
-                if (salesChart) salesChart.destroy();
-                const ctx = document.getElementById('sales-chart').getContext('2d');
-                salesChart = new Chart(ctx, { type: 'bar', data: { labels: chartLabels, datasets: [{ label: 'Jumlah Terjual', data: chartData, backgroundColor: 'rgba(245, 166, 35, 0.6)', borderColor: 'rgba(245, 166, 35, 1)', borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: '#e0e0e0' }, grid: { color: '#444' } }, x: { ticks: { color: '#e0e0e0' }, grid: { color: '#444' } } }, plugins: { legend: { labels: { color: '#e0e0e0' } } } } });
-            }
+        document.getElementById('btn-final-pay').onclick = () => {
+            const total = order.reduce((a, b) => a + (b.price * b.quantity), 0);
+            const totalQty = order.reduce((a, b) => a + b.quantity, 0);
             
-            function deleteAllSalesData() {
-                if (confirm('PERHATIAN: Ini akan menghapus SEMUA data laporan (penjualan & stok) secara permanen. Apakah Anda yakin?')) {
-                    salesHistory = []; stockHistory = [];
-                    localStorage.removeItem('dbonana_sales'); localStorage.removeItem('dbonana_stock_history');
-                    populateDashboard();
-                    alert('Semua data laporan telah dihapus.');
-                }
-            }
-
-            function updateDateTime() {
-                const now = new Date();
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-                datetimeEl.textContent = now.toLocaleDateString('id-ID', options);
-            }
-
-            // --- EVENT LISTENERS ---
-            // View Switching
-            dashboardBtn.addEventListener('click', () => showView('dashboard'));
-            cashierBtn.addEventListener('click', () => showView('cashier'));
-
-            // Cashier View
-            payBtn.addEventListener('click', openPaymentModal);
-            cancelBtn.addEventListener('click', () => { if (confirm('Batalkan pesanan?')) { order = []; renderOrder(); } });
+            const trx = { 
+                date: new Date().toLocaleString('id-ID'), 
+                total: total, 
+                totalQty: totalQty,
+                items: order.map(i => `${i.name} (${i.quantity})`).join(', ') 
+            };
             
-            // Stock Modal
-            stockBtn.addEventListener('click', openStockModal);
-            document.getElementById('close-stock-modal').addEventListener('click', () => stockModal.style.display = 'none');
-            stockItemSelect.addEventListener('change', updateStockInfo);
-            saveStockBtn.addEventListener('click', saveStockPurchase);
-
-            // Settings Modal
-            settingsBtn.addEventListener('click', openSettingsModal);
-            document.getElementById('close-settings-modal').addEventListener('click', () => settingsModal.style.display = 'none');
-            saveSettingsBtn.addEventListener('click', saveSettings);
-
-            // Payment Modal
-            document.getElementById('close-payment-modal').addEventListener('click', () => paymentModal.style.display = 'none');
-            paymentMethods.forEach(method => { method.addEventListener('click', () => { paymentMethods.forEach(m => m.classList.remove('active')); method.classList.add('active'); currentPaymentMethod = method.dataset.method; updatePaymentDetails(); }); });
-            btnFinalPay.addEventListener('click', processPayment);
-
-            // Receipt Modal
-            closeReceiptModalBtn.addEventListener('click', () => receiptModal.style.display = 'none');
+            salesHistory.push(trx);
+            localStorage.setItem('dbonana_sales', JSON.stringify(salesHistory));
             
-            // Dashboard View
-            deleteReportBtn.addEventListener('click', deleteAllSalesData);
+            document.getElementById('payment-modal').style.display = 'none';
+            alert('Transaksi Berhasil!');
+            order = []; renderOrder();
+        };
 
-            // Window
-            window.addEventListener('click', (event) => {
-                if (event.target === stockModal) stockModal.style.display = 'none';
-                if (event.target === settingsModal) settingsModal.style.display = 'none';
-                if (event.target === paymentModal) paymentModal.style.display = 'none';
-                if (event.target === receiptModal) receiptModal.style.display = 'none';
+        // Render Report Dashboard
+        function renderDashboard() {
+            const revenue = salesHistory.reduce((a, b) => a + b.total, 0);
+            const boxes = salesHistory.reduce((a, b) => a + b.totalQty, 0);
+            
+            document.getElementById('stat-revenue').innerText = `Rp ${revenue.toLocaleString()}`;
+            document.getElementById('stat-boxes').innerText = `${boxes} Box`;
+
+            // Render Table
+            const tbody = document.getElementById('sales-table-body');
+            tbody.innerHTML = '';
+            [...salesHistory].reverse().forEach(s => {
+                tbody.innerHTML += `<tr><td>${s.date}</td><td>${s.items}</td><td>Rp ${s.total.toLocaleString()}</td></tr>`;
             });
 
-            // --- INITIALIZE ---
-            init();
-        });
+            // Chart
+            const ctx = document.getElementById('sales-chart').getContext('2d');
+            if (window.myChart) window.myChart.destroy();
+            window.myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: salesHistory.slice(-10).map(s => s.date.split(' ')[1]),
+                    datasets: [{ label: 'Omzet Penjualan', data: salesHistory.slice(-10).map(s => s.total), borderColor: '#4a90e2', tension: 0.3 }]
+                },
+                options: { maintainAspectRatio: false }
+            });
+        }
+
+        document.getElementById('dashboard-btn').onclick = () => {
+            document.querySelectorAll('.main-view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-dashboard').classList.add('active');
+            document.getElementById('cashier-btn').classList.remove('active');
+            document.getElementById('dashboard-btn').classList.add('active');
+            renderDashboard();
+        };
+
+        document.getElementById('cashier-btn').onclick = () => {
+            document.querySelectorAll('.main-view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-cashier').classList.add('active');
+            document.getElementById('dashboard-btn').classList.remove('active');
+            document.getElementById('cashier-btn').classList.add('active');
+        };
+
+        document.getElementById('delete-report-btn').onclick = () => {
+            if(confirm('Hapus semua data penjualan?')) {
+                salesHistory = [];
+                localStorage.removeItem('dbonana_sales');
+                renderDashboard();
+            }
+        };
+
+        document.getElementById('close-payment-modal').onclick = () => document.getElementById('payment-modal').style.display = 'none';
+        document.getElementById('cancel-btn').onclick = () => { order = []; renderOrder(); };
+
+        renderMenu();
     </script>
 </body>
 </html>
